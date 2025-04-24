@@ -1,0 +1,31 @@
+.event-carousel {
+    padding: 1rem;
+    background: #f0f0f0;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .carousel-scroll {
+    display: flex;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    gap: 1rem;
+  }
+  
+  .event-card {
+    padding: 0.75rem;
+    border-radius: 6px;
+    background: white;
+    border: 2px solid #ccc;
+    min-width: 160px;
+    cursor: pointer;
+    flex-shrink: 0;
+    text-align: left;
+  }
+  
+  .event-card.active {
+    border-color: #222;
+    background: #fafafa;
+    font-weight: bold;
+  }
+  

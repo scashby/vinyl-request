@@ -1,0 +1,29 @@
+.request-queue {
+    padding: 1rem;
+    border-top: 1px solid #ddd;
+  }
+  
+  .now-playing, .up-next {
+    background: #fff4d4;
+    border: 1px solid #e0c97f;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+  }
+  
+  .queue-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .queue-item {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .admin-buttons button,
+  .vote-buttons button {
+    margin-right: 0.5rem;
+  }
+  

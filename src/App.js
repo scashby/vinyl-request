@@ -1,23 +1,117 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
+import Header from './components/Header';
+import FilterBar from './components/FilterBar';
+import AuthWrapper from './components/AuthWrapper';
+import NowPlayingDisplay from './components/NowPlayingDisplay';
+import CustomerVinylForm from './components/CustomerVinylForm';
+import AdminPanel from './components/AdminPanel';
+import EventDisplay from './components/EventDisplay';
+
 import './App.css';
 
 function App() {
+  const [session, setSession] = useState(null);
+  const [albums, setAlbums] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [nowPlaying, setNowPlaying] = useState(null);
+  const [upNext, setUpNext] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [formatFilter, setFormatFilter] = useState('All');
+  const [adminMode, setAdminMode] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [activeEventId, setActiveEventId] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('date', { ascending: true });
+  
+      if (error) {
+        console.error('Error fetching events:', error);
+      } else {
+        console.log('Fetched events:', data); // 🪵 for testing
+        setEvents(data);
+      }
+    };
+  
+    fetchEvents();
+  }, []);
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {!session ? (
+        <AuthWrapper />
+      ) : (
+        <>
+          <Header />
+
+          <EventDisplay
+            events={events}
+            activeEventId={activeEventId}
+            setActiveEventId={setActiveEventId}
+          />
+
+
+          <FilterBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            formatFilter={formatFilter}
+            setFormatFilter={setFormatFilter}
+          />
+
+        {activeEventId &&
+          events.find(e => e.id === activeEventId) &&
+          new Date(events.find(e => e.id === activeEventId).date).toDateString() === new Date().toDateString() &&
+          nowPlaying && (
+            <NowPlayingDisplay nowPlaying={nowPlaying} />
+        )}
+
+          <CustomerVinylForm
+            activeEventId={activeEventId}
+            session={session}
+            setRequests={setRequests}
+          />
+
+        {adminMode && (
+          <AdminPanel
+            adminMode={adminMode}
+            setAdminMode={setAdminMode}
+            albums={albums}
+            setAlbums={setAlbums}
+            events={events}
+            setEvents={setEvents}
+            activeEventId={activeEventId}
+            setActiveEventId={setActiveEventId}
+            requests={requests}
+            setRequests={setRequests}
+          />
+        )}
+
+
+          <button
+            onClick={() => setAdminMode(!adminMode)}
+            className="admin-toggle"
+          >
+            {adminMode ? 'Exit Admin Mode' : 'Enter Admin Mode'}
+          </button>
+        </>
+      )}
     </div>
   );
 }

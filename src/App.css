@@ -1,38 +1,187 @@
-.App {
-  text-align: center;
+/* General Styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  background-color: #fff;
+  color: #111;
+  line-height: 1.6;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.app-container {
+  padding: 1rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.logo {
+  max-width: 120px;
+  height: auto;
+  margin-right: 1rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Header */
+.app-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin-bottom: 1rem;
+}
+
+.app-header h1 {
+  font-size: 1.75rem;
+  margin: 0;
+}
+
+.app-header h2 {
+  font-size: 1.2rem;
+  margin: 0.2rem 0 0;
+  color: #666;
+}
+
+/* Intro Text */
+.intro-text {
+  margin-bottom: 2rem;
+}
+
+/* Now Playing / Up Next */
+.now-playing-upnext {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.now-playing,
+.up-next {
+  flex: 1 1 300px;
+  background-color: #f7f7f7;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.album-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.album-info img {
+  width: 100px;
+  border-radius: 6px;
+}
+
+/* Event Carousel */
+.event-carousel {
+  margin-bottom: 2rem;
+}
+
+.carousel-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.event-card {
+  background: #f1f1f1;
+  border-radius: 6px;
+  padding: 0.75rem;
+  min-width: 150px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Filters & Controls */
+.controls {
+  margin-bottom: 2rem;
+}
+
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.filters button.active {
+  background-color: #333;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+/* Browse Grid */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.album-card {
+  background: #fafafa;
+  border: 1px solid #eee;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.album-card img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.album-meta {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Request Form */
+.request-form,
+.manual-entry-form {
+  margin-top: 2rem;
+  background: #f0f0f0;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.request-form label,
+.manual-entry-form label {
+  display: block;
+  margin: 0.5rem 0 0.25rem;
+}
+
+/* Queue */
+.queue-list {
+  margin-top: 1rem;
+}
+
+.queue-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.queue-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .album-info {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  to {
-    transform: rotate(360deg);
+  .admin-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
