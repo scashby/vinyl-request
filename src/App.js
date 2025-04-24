@@ -21,6 +21,7 @@ function App() {
   const [adminMode, setAdminMode] = useState(false);
   const [events, setEvents] = useState([]);
   const [activeEventId, setActiveEventId] = useState(null);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -35,83 +36,83 @@ function App() {
       authListener.subscription.unsubscribe();
     };
   }, []);
+
   useEffect(() => {
     const fetchEvents = async () => {
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .order('date', { ascending: true });
-  
+
       if (error) {
         console.error('Error fetching events:', error);
       } else {
-        console.log('Fetched events:', data); // 🪵 for testing
+        console.log('Fetched events:', data);
         setEvents(data);
       }
     };
-  
+
     fetchEvents();
   }, []);
-  
+
   return (
     <div className="App">
-      {!session ? (
-        <AuthWrapper />
-      ) : (
-        <>
-          <Header />
+      <Header />
 
-          <EventDisplay
-            events={events}
-            activeEventId={activeEventId}
-            setActiveEventId={setActiveEventId}
-          />
+      <EventDisplay
+        events={events}
+        activeEventId={activeEventId}
+        setActiveEventId={setActiveEventId}
+      />
 
+      <FilterBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        formatFilter={formatFilter}
+        setFormatFilter={setFormatFilter}
+      />
 
-          <FilterBar
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            formatFilter={formatFilter}
-            setFormatFilter={setFormatFilter}
-          />
-
-        {activeEventId &&
-          events.find(e => e.id === activeEventId) &&
-          new Date(events.find(e => e.id === activeEventId).date).toDateString() === new Date().toDateString() &&
-          nowPlaying && (
-            <NowPlayingDisplay nowPlaying={nowPlaying} />
+      {activeEventId &&
+        events.find((e) => e.id === activeEventId) &&
+        new Date(events.find((e) => e.id === activeEventId).date).toDateString() === new Date().toDateString() &&
+        nowPlaying && (
+          <NowPlayingDisplay nowPlaying={nowPlaying} />
         )}
 
-          <CustomerVinylForm
-            activeEventId={activeEventId}
-            session={session}
-            setRequests={setRequests}
-          />
+      <CustomerVinylForm
+        activeEventId={activeEventId}
+        session={session}
+        setRequests={setRequests}
+      />
 
-        {adminMode && (
-          <AdminPanel
-            adminMode={adminMode}
-            setAdminMode={setAdminMode}
-            albums={albums}
-            setAlbums={setAlbums}
-            events={events}
-            setEvents={setEvents}
-            activeEventId={activeEventId}
-            setActiveEventId={setActiveEventId}
-            requests={requests}
-            setRequests={setRequests}
-          />
-        )}
+      {adminMode && !session && showLogin && <AuthWrapper />}
 
-
-          <button
-            onClick={() => setAdminMode(!adminMode)}
-            className="admin-toggle"
-          >
-            {adminMode ? 'Exit Admin Mode' : 'Enter Admin Mode'}
-          </button>
-        </>
+      {adminMode && session && (
+        <AdminPanel
+          adminMode={adminMode}
+          setAdminMode={setAdminMode}
+          albums={albums}
+          setAlbums={setAlbums}
+          events={events}
+          setEvents={setEvents}
+          activeEventId={activeEventId}
+          setActiveEventId={setActiveEventId}
+          requests={requests}
+          setRequests={setRequests}
+        />
       )}
+
+      <button
+        onClick={() => {
+          if (!session) {
+            setShowLogin(true);
+          }
+          setAdminMode(!adminMode);
+        }}
+        className="admin-toggle"
+      >
+        {adminMode ? 'Exit Admin Mode' : 'Enter Admin Mode'}
+      </button>
     </div>
   );
 }

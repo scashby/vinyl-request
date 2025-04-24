@@ -1,21 +1,44 @@
-import React from 'react';
-import 'css/Header.css';
+import React, { useState } from 'react';
+import { supabase } from '../supabaseClient';
+import './Header.css';
 
+const Header = ({ session, setSession, setAdminMode }) => {
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
 
-const Header = () => (
-  <header className="app-header">
-    <a href="https://www.devilspurse.com" target="_blank" rel="noopener noreferrer">
-      <img
-        src="https://d1ynl4hb5mx7r8.cloudfront.net/wp-content/uploads/2015/06/devils-purse-300x300.png"
-        alt="Devil’s Purse Logo"
-        className="logo"
-      />
-    </a>
-    <div>
-      <h1>BYOVinyl (and Cassettes) at Devil’s Purse</h1>
-      <h2>Request Queue</h2>
-    </div>
-  </header>
-);
+  const handleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    });
+    if (error) console.error('Google login failed:', error.message);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
+    setAdminMode(false);
+  };
+
+  return (
+    <header className="header">
+      <div className="logo">🎵 Vinyl Request</div>
+      <div className="gear-icon" onClick={() => setShowAdminLogin(!showAdminLogin)}>
+        ⚙️
+      </div>
+
+      {showAdminLogin && (
+        <div className="admin-login-panel">
+          {!session ? (
+            <button onClick={handleLogin}>Sign in with Google</button>
+          ) : (
+            <>
+              <p>Logged in as {session.user.email}</p>
+              <button onClick={handleLogout}>Log Out</button>
+            </>
+          )}
+        </div>
+      )}
+    </header>
+  );
+};
 
 export default Header;
