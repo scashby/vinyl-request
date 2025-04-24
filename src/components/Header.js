@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
-import '@css/Header.css';
+import 'css/Header.css';
 
 const Header = ({ session, setSession, setAdminMode }) => {
   const [showAdminLogin, setShowAdminLogin] = useState(false);

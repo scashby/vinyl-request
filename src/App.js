@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import Header from './components/Header';
-import FilterBar from './components/FilterBar';
-import AuthWrapper from './components/AuthWrapper';
-import NowPlayingDisplay from './components/NowPlayingDisplay';
-import CustomerVinylForm from './components/CustomerVinylForm';
-import AdminPanel from './components/AdminPanel';
-import EventDisplay from './components/EventDisplay';
+import Header from 'components/Header';
+import FilterBar from 'components/FilterBar';
+import AuthWrapper from 'components/AuthWrapper';
+import NowPlayingDisplay from 'components/NowPlayingDisplay';
+import CustomerVinylForm from 'components/CustomerVinylForm';
+import AdminPanel from 'components/AdminPanel';
+import EventDisplay from 'components/EventDisplay';
 
-import './App.css';
+import 'css/App.css';
 
 function App() {
   const [session, setSession] = useState(null);
