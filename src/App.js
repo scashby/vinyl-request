@@ -100,6 +100,7 @@ function App() {
       </>
     }
   />
+      <Route path="/browse/:eventId" element={<BrowseCollectionPage />} />
 
     <Route path="/admin" element={<AdminPanel />}>
       <Route path="edit-events" element={<EditEvents />} />
@@ -109,7 +110,6 @@ function App() {
       <Route path="replace-track-listings" element={<AddTrackListings />} />
       <Route path="return-home" element={<ReturnToHome />} />
       <Route path="logout" element={<LogoutAdmin />} />
-      <Route path="/browse/:eventId" element={<BrowseCollectionPage />} />
     </Route>
 
 </Routes>
