@@ -39,13 +39,14 @@ const BrowseAlbums = ({
           if (album.image_url) return album;
     
           try {
-            const fallbackUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title);
+            const fallbackUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
             if (fallbackUrl) {
               return { ...album, image_url: fallbackUrl };
             }
           } catch (e) {
             console.warn(`Failed to fetch fallback art for ${album.artist} - ${album.title}`);
           }
+          
     
           return album;
         })

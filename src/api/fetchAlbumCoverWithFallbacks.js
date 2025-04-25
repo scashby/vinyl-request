@@ -1,6 +1,27 @@
 import { searchDiscogsRelease } from './discogs';
 import { fetchAlbumArtFromiTunes } from './itunes';
 import { fetchAlbumFromMusicBrainz, fetchCoverArtFromMBID } from './musicbrainz';
+import { supabase } from '../supabaseClient'; // Make sure you import this at the top!
+
+export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
+  const fallbackSources = [fetchFromDiscogs, fetchFromItunes, fetchFromMusicbrainz];
+
+  for (const fetchSource of fallbackSources) {
+    const url = await fetchSource(artist, title);
+    if (url) {
+      // Save the good image_url back to Supabase immediately
+      if (albumId) {
+        await supabase
+          .from('albums')
+          .update({ image_url: url })
+          .eq('id', albumId);
+      }
+
+      return url;
+    }
+  }
+  return null;
+}
 
 export async function fetchAlbumCoverWithFallbacks(artist, album) {
   try {
