@@ -108,13 +108,34 @@ const BrowseAlbums = ({
             onClick={() => handleAlbumClick(album.id)}
           >
             {album.image_url ? (
-              <img src={album.image_url} alt={`${album.artist} - ${album.title}`} className="album-image" />
-            ) : (
-              <div className="album-placeholder">
-                <div>{album.artist}</div>
-                <div><strong>{album.title}</strong></div>
-              </div>
-            )}
+              <img
+                src={album.image_url}
+                alt={`${album.artist} - ${album.title}`}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div
+              className="album-placeholder"
+              style={{
+                display: !album.image_url ? 'flex' : 'none',
+                width: '100%',
+                height: '150px',
+                backgroundColor: 'black',
+                color: 'white',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+                padding: '5px',
+                fontSize: '0.9em',
+              }}
+            >
+              {album.artist} – {album.title}
+            </div>
+
             {expandedId === album.id && (
               <div className="request-form">
                 <select value={side} onChange={(e) => setSide(e.target.value)}>
