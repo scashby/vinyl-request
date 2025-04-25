@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import BrowseAlbums from './BrowseAlbums';
+import { supabase } from '../supabaseClient';
 
 const BrowseCollectionPage = () => {
   const { eventId } = useParams();
