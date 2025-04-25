@@ -2,39 +2,39 @@ import { searchDiscogsRelease } from './discogs';
 import { fetchAlbumArtFromiTunes } from './itunes';
 import { fetchAlbumFromMusicBrainz, fetchCoverArtFromMBID } from './musicbrainz';
 
-export async function fetchAlbumCoverWithFallbacks(artist, title) {
+export const fetchAlbumCoverWithFallbacks = async (artist, title) => {
   // 1. Try Discogs
   try {
-    const result = await searchDiscogsRelease(artist, title);
-    if (result?.thumb) {
-      return result.thumb;
+    const discogsResult = await searchDiscogsRelease(artist, title);
+    if (discogsResult && discogsResult.cover_image) {
+      return discogsResult.cover_image;
     }
-  } catch (e) {
-    console.warn(`Discogs fetch failed for ${artist} - ${title}`);
+  } catch (err) {
+    console.warn(`Discogs fetch failed: ${err}`);
   }
 
   // 2. Try iTunes
   try {
-    const itunesUrl = await fetchAlbumArtFromiTunes(artist, title);
-    if (itunesUrl) {
-      return itunesUrl;
+    const itunesResult = await fetchAlbumArtFromiTunes(artist, title);
+    if (itunesResult) {
+      return itunesResult;
     }
-  } catch (e) {
-    console.warn(`iTunes fetch failed for ${artist} - ${title}`);
+  } catch (err) {
+    console.warn(`iTunes fetch failed: ${err}`);
   }
 
   // 3. Try MusicBrainz
   try {
     const mbData = await fetchAlbumFromMusicBrainz(artist, title);
     if (mbData?.id) {
-      const mbCover = await fetchCoverArtFromMBID(mbData.id);
-      if (mbCover) {
-        return mbCover;
+      const mbArt = await fetchCoverArtFromMBID(mbData.id);
+      if (mbArt) {
+        return mbArt;
       }
     }
-  } catch (e) {
-    console.warn(`MusicBrainz fetch failed for ${artist} - ${title}`);
+  } catch (err) {
+    console.warn(`MusicBrainz fetch failed: ${err}`);
   }
 
-  return null; // No fallback worked
-}
+  return null;
+};
