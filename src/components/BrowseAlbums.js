@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import 'css/BrowseAlbums.css';
 import FilterBar from './FilterBar';
+import axios from 'axios';
 
 const BrowseAlbums = ({
   activeEventId,
@@ -24,14 +25,40 @@ const BrowseAlbums = ({
         .from('collection')
         .select('*')
         .order('artist', { ascending: true });
-
+    
       if (error) {
         console.error('Error fetching albums:', error);
-      } else {
-        setAlbums(data);
-        setFilteredAlbums(data);
+        return;
       }
+    
+      const albumsWithImages = await Promise.all(
+        data.map(async (album) => {
+          if (album.image_url) return album;
+    
+          try {
+            // Try Discogs (basic search)
+            const response = await axios.get(
+              `https://itunes.apple.com/search?term=${encodeURIComponent(
+                album.artist + ' ' + album.title
+              )}&entity=album&limit=1`
+            );
+    
+            const result = response.data.results?.[0];
+            if (result?.artworkUrl100) {
+              return { ...album, image_url: result.artworkUrl100.replace('100x100bb.jpg', '300x300bb.jpg') };
+            }
+          } catch (e) {
+            console.warn(`Failed to fetch fallback art for ${album.artist} - ${album.title}`);
+          }
+    
+          return album;
+        })
+      );
+    
+      setAlbums(albumsWithImages);
+      setFilteredAlbums(albumsWithImages);
     };
+    
 
     fetchAlbums();
   }, []);
@@ -62,10 +89,8 @@ const BrowseAlbums = ({
 
   return (
     <div className="browse-albums">
-      <div className="browse-header">
-        <h2>Browse Our Collection</h2>
-        <button onClick={() => setExpandedId(null)}>Hide Collection</button>
-      </div>
+{/* Header removed for full-page version */}
+
 
       <div className="search-filters">
         <input
