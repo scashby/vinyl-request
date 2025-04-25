@@ -100,9 +100,15 @@ function App() {
     }
   />
 
-  <Route path="/admin" element={<AdminPanel />}>
-    <Route path="edit-events" element={<EditEvents />} />
-  </Route>
+    <Route path="/admin" element={<AdminPanel />}>
+      <Route path="edit-events" element={<EditEvents />} />
+      <Route path="add-customer-vinyl" element={<AddCustomerVinyl />} />
+      <Route path="edit-queue" element={<EditQueue />} />
+      <Route path="replace-album-art" element={<AddAlbumArt />} />
+      <Route path="replace-track-listings" element={<AddTrackListings />} />
+      <Route path="return-home" element={<ReturnToHome />} />
+      <Route path="logout" element={<LogoutAdmin />} />
+    </Route>
 
 </Routes>
 
