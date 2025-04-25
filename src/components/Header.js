@@ -9,6 +9,9 @@ const Header = ({ session, setSession, setAdminMode }) => {
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        redirectTo: 'https://vinyl-request.vercel.app/admin' // or http://localhost:3000/admin for local dev
+      }
     });
     if (error) console.error('Google login failed:', error.message);
   };

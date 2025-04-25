@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import Header from 'components/Header';
 import AuthWrapper from 'components/AuthWrapper';
@@ -46,7 +47,6 @@ function App() {
       if (error) {
         console.error('Error fetching events:', error);
       } else {
-        console.log('Fetched events:', data);
         setEvents(data);
       }
     };
@@ -55,48 +55,68 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <Header />
-
-      <EventDisplay
-        events={events}
-        activeEventId={activeEventId}
-        setActiveEventId={setActiveEventId}
-      />
-
-
-      {activeEventId &&
-        events.find((e) => e.id === activeEventId) &&
-        new Date(events.find((e) => e.id === activeEventId).date).toDateString() === new Date().toDateString() &&
-        nowPlaying && (
-          <NowPlayingDisplay nowPlaying={nowPlaying} />
-        )}
-
-      <CustomerVinylForm
-        activeEventId={activeEventId}
-        session={session}
-        setRequests={setRequests}
-      />
-
-      {adminMode && !session && showLogin && <AuthWrapper />}
-
-      {adminMode && session && (
-        <AdminPanel
+    <Router>
+      <div className="App">
+        <Header
+          session={session}
+          setSession={setSession}
           adminMode={adminMode}
           setAdminMode={setAdminMode}
-          albums={albums}
-          setAlbums={setAlbums}
-          events={events}
-          setEvents={setEvents}
-          activeEventId={activeEventId}
-          setActiveEventId={setActiveEventId}
-          requests={requests}
-          setRequests={setRequests}
+          showLogin={showLogin}
+          setShowLogin={setShowLogin}
         />
-      )}
 
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <EventDisplay
+                  events={events}
+                  activeEventId={activeEventId}
+                  setActiveEventId={setActiveEventId}
+                />
 
-    </div>
+                {activeEventId &&
+                  events.find((e) => e.id === activeEventId) &&
+                  new Date(events.find((e) => e.id === activeEventId).date).toDateString() === new Date().toDateString() &&
+                  nowPlaying && (
+                    <NowPlayingDisplay nowPlaying={nowPlaying} />
+                  )}
+
+                <CustomerVinylForm
+                  activeEventId={activeEventId}
+                  session={session}
+                  setRequests={setRequests}
+                />
+              </>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              adminMode && session ? (
+                <AdminPanel
+                  adminMode={adminMode}
+                  setAdminMode={setAdminMode}
+                  albums={albums}
+                  setAlbums={setAlbums}
+                  events={events}
+                  setEvents={setEvents}
+                  activeEventId={activeEventId}
+                  setActiveEventId={setActiveEventId}
+                  requests={requests}
+                  setRequests={setRequests}
+                />
+              ) : (
+                showLogin && <AuthWrapper />
+              )
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
