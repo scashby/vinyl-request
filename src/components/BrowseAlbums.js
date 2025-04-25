@@ -107,34 +107,45 @@ const BrowseAlbums = ({
             className="album-card"
             onClick={() => handleAlbumClick(album.id)}
           >
-            {album.image_url ? (
+            <div style={{ position: 'relative', width: '100%', height: '150px' }}>
               <img
                 src={album.image_url}
                 alt={`${album.artist} - ${album.title}`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: album.image_url ? 'block' : 'none',
+                }}
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
+                  const fallback = e.target.nextElementSibling;
+                  if (fallback) fallback.style.display = 'flex';
                 }}
               />
-            ) : null}
-            <div
-              className="album-placeholder"
-              style={{
-                display: !album.image_url ? 'flex' : 'none',
-                width: '100%',
-                height: '150px',
-                backgroundColor: 'black',
-                color: 'white',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
-                padding: '5px',
-                fontSize: '0.9em',
-              }}
-            >
-              {album.artist} – {album.title}
+              <div
+                className="album-placeholder"
+                style={{
+                  display: album.image_url ? 'none' : 'flex',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'black',
+                  color: 'white',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  padding: '5px',
+                  fontSize: '0.9em',
+                }}
+              >
+                {album.artist} – {album.title}
+              </div>
             </div>
+
 
             {expandedId === album.id && (
               <div className="request-form">
