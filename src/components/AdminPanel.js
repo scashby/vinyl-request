@@ -1,15 +1,7 @@
 // src/components/AdminPanel.js
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import 'css/AdminPanel.css';
-
-import EditEvents from 'admin/EditEvents';
-import AddCustomerVinyl from 'admin/AddCustomerVinyl';
-import EditQueue from 'admin/EditQueue';
-import AddAlbumArt from 'admin/AddAlbumArt';
-import AddTrackListings from 'admin/AddTrackListings';
-import ReturnToHome from 'admin/ReturnToHome';
-import LogoutAdmin from 'admin/LogoutAdmin';
 
 const AdminPanel = () => {
   return (
@@ -27,16 +19,9 @@ const AdminPanel = () => {
       </nav>
 
       <main className="admin-content">
-        <Routes>
-          <Route path="/admin/edit-events" element={<EditEvents />} />
-          <Route path="/admin/add-customer-vinyl" element={<AddCustomerVinyl />} />
-          <Route path="/admin/edit-queue" element={<EditQueue />} />
-          <Route path="/admin/replace-album-art" element={<AddAlbumArt />} />
-          <Route path="/admin/replace-track-listings" element={<AddTrackListings />} />
-          <Route path="/admin/return-home" element={<ReturnToHome />} />
-          <Route path="/admin/logout" element={<LogoutAdmin />} />
-        </Routes>
+        <Outlet />
       </main>
+
     </div>
   );
 };

@@ -7,6 +7,13 @@ import NowPlayingDisplay from 'components/NowPlayingDisplay';
 import CustomerVinylForm from 'components/CustomerVinylForm';
 import AdminPanel from 'components/AdminPanel';
 import EventDisplay from 'components/EventDisplay';
+import EditEvents from 'admin/EditEvents';
+import AddCustomerVinyl from 'admin/AddCustomerVinyl';
+import EditQueue from 'admin/EditQueue';
+import AddAlbumArt from 'admin/AddAlbumArt';
+import AddTrackListings from 'admin/AddTrackListings';
+import ReturnToHome from 'admin/ReturnToHome';
+import LogoutAdmin from 'admin/LogoutAdmin';
 
 import 'css/App.css';
 
@@ -93,27 +100,20 @@ function App() {
             }
           />
 
-          <Route
-            path="/admin"
-            element={
-              adminMode && session ? (
-                <AdminPanel
-                  adminMode={adminMode}
-                  setAdminMode={setAdminMode}
-                  albums={albums}
-                  setAlbums={setAlbums}
-                  events={events}
-                  setEvents={setEvents}
-                  activeEventId={activeEventId}
-                  setActiveEventId={setActiveEventId}
-                  requests={requests}
-                  setRequests={setRequests}
-                />
-              ) : (
-                showLogin && <AuthWrapper />
-              )
-            }
-          />
+          {adminMode && session ? (
+            <Route path="/admin" element={<AdminPanel />}>
+              <Route path="edit-events" element={<EditEvents />} />
+              <Route path="add-customer-vinyl" element={<AddCustomerVinyl />} />
+              <Route path="edit-queue" element={<EditQueue />} />
+              <Route path="replace-album-art" element={<AddAlbumArt />} />
+              <Route path="replace-track-listings" element={<AddTrackListings />} />
+              <Route path="return-home" element={<ReturnToHome />} />
+              <Route path="logout" element={<LogoutAdmin />} />
+            </Route>
+          ) : (
+            showLogin && <Route path="/admin" element={<AuthWrapper />} />
+          )}
+
         </Routes>
       </div>
     </Router>
