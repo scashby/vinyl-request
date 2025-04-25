@@ -73,53 +73,39 @@ function App() {
           setShowLogin={setShowLogin}
         />
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <EventDisplay
-                  events={events}
-                  activeEventId={activeEventId}
-                  setActiveEventId={setActiveEventId}
-                />
+<Routes>
+  <Route
+    path="/"
+    element={
+      <>
+        <EventDisplay
+          events={events}
+          activeEventId={activeEventId}
+          setActiveEventId={setActiveEventId}
+        />
 
-                {activeEventId &&
-                  events.find((e) => e.id === activeEventId) &&
-                  new Date(events.find((e) => e.id === activeEventId).date).toDateString() === new Date().toDateString() &&
-                  nowPlaying && (
-                    <NowPlayingDisplay nowPlaying={nowPlaying} />
-                  )}
-
-                <CustomerVinylForm
-                  activeEventId={activeEventId}
-                  session={session}
-                  setRequests={setRequests}
-                />
-              </>
-            }
-          />
-
-          {adminMode && session && (
-            <>
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="/admin/edit-events" element={<AdminPanel><EditEvents /></AdminPanel>} />
-              <Route path="/admin/add-customer-vinyl" element={<AdminPanel><AddCustomerVinyl /></AdminPanel>} />
-              <Route path="/admin/edit-queue" element={<AdminPanel><EditQueue /></AdminPanel>} />
-              <Route path="/admin/replace-album-art" element={<AdminPanel><AddAlbumArt /></AdminPanel>} />
-              <Route path="/admin/replace-track-listings" element={<AdminPanel><AddTrackListings /></AdminPanel>} />
-              <Route path="/admin/return-home" element={<AdminPanel><ReturnToHome /></AdminPanel>} />
-              <Route path="/admin/logout" element={<AdminPanel><LogoutAdmin /></AdminPanel>} />
-            </>
+        {activeEventId &&
+          events.find((e) => e.id === activeEventId) &&
+          new Date(events.find((e) => e.id === activeEventId).date).toDateString() === new Date().toDateString() &&
+          nowPlaying && (
+            <NowPlayingDisplay nowPlaying={nowPlaying} />
           )}
 
-          {showLogin && !session && (
-            <Route path="/admin/*" element={<AuthWrapper />} />
-          )}
+        <CustomerVinylForm
+          activeEventId={activeEventId}
+          session={session}
+          setRequests={setRequests}
+        />
+      </>
+    }
+  />
 
+  <Route path="/admin" element={<AdminPanel />}>
+    <Route path="edit-events" element={<EditEvents />} />
+  </Route>
 
+</Routes>
 
-        </Routes>
       </div>
     </Router>
   );
