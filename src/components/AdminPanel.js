@@ -6,6 +6,7 @@ import 'css/AdminPanel.css';
 const AdminPanel = () => {
   return (
     <div className="admin-dashboard">
+      <p style={{ color: 'red', fontWeight: 'bold' }}>Admin Panel Loaded</p> 
       <nav className="admin-sidebar">
         <ul>
           <li><Link to="/admin/edit-events">Edit Events</Link></li>
