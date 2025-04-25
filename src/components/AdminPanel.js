@@ -1,78 +1,43 @@
 // src/components/AdminPanel.js
 import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import 'css/AdminPanel.css';
 
+import EditEvents from 'admin/EditEvents';
+import AddCustomerVinyl from 'admin/AddCustomerVinyl';
+import EditQueue from 'admin/EditQueue';
+import AddAlbumArt from 'admin/AddAlbumArt';
+import AddTrackListings from 'admin/AddTrackListings';
+import ReturnToHome from 'admin/ReturnToHome';
+import LogoutAdmin from 'admin/LogoutAdmin';
 
-const AdminPanel = ({
-  adminMode,
-  setAdminMode,
-  eventDate,
-  setEventDate,
-  eventTime,
-  setEventTime,
-  eventTitle,
-  setEventTitle,
-  eventInfo,
-  setEventInfo,
-  editingEvent,
-  handleEventFormSubmit,
-  events
-}) => {
+const AdminPanel = () => {
   return (
-    <section className="admin-controls">
-      <label>
-        <input
-          type="checkbox"
-          checked={adminMode}
-          onChange={() => setAdminMode(!adminMode)}
-        />
-        Admin Mode
-      </label>
+    <div className="admin-dashboard">
+      <nav className="admin-sidebar">
+        <ul>
+          <li><Link to="/admin/edit-events">Edit Events</Link></li>
+          <li><Link to="/admin/add-customer-vinyl">Add Customer Vinyl</Link></li>
+          <li><Link to="/admin/edit-queue">Edit Queue</Link></li>
+          <li><Link to="/admin/replace-album-art">Add or Replace Album Art</Link></li>
+          <li><Link to="/admin/replace-track-listings">Add or Replace Sides or Track Listings</Link></li>
+          <li><Link to="/admin/return-home">Return to Home</Link></li>
+          <li><Link to="/admin/logout">Log out of Admin</Link></li>
+        </ul>
+      </nav>
 
-      {adminMode && (
-        <div className="event-editor">
-          <h3>🛠️ Edit Events</h3>
-          <form onSubmit={handleEventFormSubmit}>
-            <input
-              type="date"
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Time"
-              value={eventTime}
-              onChange={(e) => setEventTime(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Event Title"
-              value={eventTitle}
-              onChange={(e) => setEventTitle(e.target.value)}
-              required
-            />
-            <textarea
-              placeholder="Additional Info"
-              value={eventInfo}
-              onChange={(e) => setEventInfo(e.target.value)}
-            />
-            <button type="submit">{editingEvent ? 'Update' : 'Add'} Event</button>
-          </form>
-
-          <ul className="event-list">
-            {events.map((evt) => (
-              <li key={evt.id}>
-                <strong>{evt.date}</strong> — {evt.title} <em>({evt.time})</em>
-                <br />
-                <small>{evt.info}</small>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </section>
+      <main className="admin-content">
+        <Routes>
+          <Route path="/admin/edit-events" element={<EditEvents />} />
+          <Route path="/admin/add-customer-vinyl" element={<AddCustomerVinyl />} />
+          <Route path="/admin/edit-queue" element={<EditQueue />} />
+          <Route path="/admin/replace-album-art" element={<AddAlbumArt />} />
+          <Route path="/admin/replace-track-listings" element={<AddTrackListings />} />
+          <Route path="/admin/return-home" element={<ReturnToHome />} />
+          <Route path="/admin/logout" element={<LogoutAdmin />} />
+        </Routes>
+      </main>
+    </div>
   );
 };
 
