@@ -13,11 +13,12 @@ const Header = ({ session, setSession, setAdminMode }) => {
     if (error) console.error('Google login failed:', error.message);
   };
 
-  const handleLogout = async () => {
+  /*const handleLogout = async () => {
     await supabase.auth.signOut();
     setSession(null);
     setAdminMode(false);
   };
+  */
 
   return (
     <header className="app-header">
@@ -34,22 +35,26 @@ const Header = ({ session, setSession, setAdminMode }) => {
       </div>
 
       <div className="header-column gear-column">
-        <div className="gear-button" onClick={() => setShowAdminLogin(!showAdminLogin)} title="Admin Login">
+        <div
+          className="gear-button"
+          onClick={() => {
+            if (session) {
+              window.location.href = "/admin";
+            } else {
+              setShowAdminLogin(!showAdminLogin);
+            }
+          }}
+          title="Admin Panel"
+            >
           ⚙️
         </div>
-        {showAdminLogin && (
+        {showAdminLogin && !session && (
           <div className="admin-login-panel">
-            {!session ? (
-              <button onClick={handleLogin}>Sign in with Google</button>
-            ) : (
-              <>
-                <p>Logged in as {session.user.email}</p>
-                <button onClick={handleLogout}>Log Out</button>
-              </>
-            )}
+            <button onClick={handleLogin}>Sign in with Google</button>
           </div>
         )}
       </div>
+
     </header>
   );
 };
