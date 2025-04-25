@@ -21,25 +21,35 @@ const Header = ({ session, setSession, setAdminMode }) => {
 
   return (
     <header className="app-header">
-      <div className="admin-toggle" onClick={() => setShowAdminLogin(!showAdminLogin)}>
-        ⚙️
+      <div className="header-column logo-column">
+        <img src={logo} alt="Devil's Purse Logo" className="dp-logo" />
       </div>
-      <div className="logo-title-container">
-        <img src={logo} alt="Devil's Purse Logo" className="app-logo" />
-        <h1 className="header-title">Devil's Purse BYO Vinyl (and Cassettes) Request Queue</h1>
+
+      <div className="header-column title-column">
+        <h1 className="app-title">
+          Devil's Purse BYO Vinyl
+          <br />
+          (and Cassettes) Request Queue
+        </h1>
       </div>
-      {showAdminLogin && (
-        <div className="admin-login-panel">
-          {!session ? (
-            <button onClick={handleLogin}>Sign in with Google</button>
-          ) : (
-            <>
-              <p>Logged in as {session.user.email}</p>
-              <button onClick={handleLogout}>Log Out</button>
-            </>
-          )}
+
+      <div className="header-column gear-column">
+        <div className="gear-button" onClick={() => setShowAdminLogin(!showAdminLogin)} title="Admin Login">
+          ⚙️
         </div>
-      )}
+        {showAdminLogin && (
+          <div className="admin-login-panel">
+            {!session ? (
+              <button onClick={handleLogin}>Sign in with Google</button>
+            ) : (
+              <>
+                <p>Logged in as {session.user.email}</p>
+                <button onClick={handleLogout}>Log Out</button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </header>
   );
 };

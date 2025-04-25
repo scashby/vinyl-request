@@ -1,42 +1,76 @@
 .app-header {
-    display: flex;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ccc;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1000;
+}
+
+.header-left,
+.header-center,
+.header-right {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+
+.header-left {
+  justify-content: flex-start;
+}
+
+.dp-logo {
+  height: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+.header-center {
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
-  
-  .logo-title-container {
+    text-align: center;
     display: flex;
-    align-items: center;
-    gap: 15px;
+    flex-direction: column;
   }
   
-  .app-logo {
-    height: auto;
-    max-height: 100px; /* Keep full-size with optional cap */
-    cursor: pointer;
-  }
-  
-  .header-title {
-    font-size: 1.6rem;
+  .app-title {
+    font-size: 3.4rem;
     font-weight: bold;
-    color: #333;
+    line-height: 1.3;
     margin: 0;
-    text-align: left;
+    padding: 0;
+    text-align: center;
+    word-break: break-word;
   }
-  
-  .admin-toggle {
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px;
-    user-select: none;
-    position: absolute;
-    top: 10px;
-    left: 10px;
+
+  .header-right {
+    justify-content: flex-end;
+    align-items: flex-start; /* Add this line */
+    position: relative;
   }
-  
+
+.gear-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 1.8rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 5px;
+}
+
+.admin-login-panel {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 1001;
+}

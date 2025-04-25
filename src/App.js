@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import Header from 'components/Header';
-import FilterBar from 'components/FilterBar';
 import AuthWrapper from 'components/AuthWrapper';
 import NowPlayingDisplay from 'components/NowPlayingDisplay';
 import CustomerVinylForm from 'components/CustomerVinylForm';
@@ -65,12 +64,6 @@ function App() {
         setActiveEventId={setActiveEventId}
       />
 
-      <FilterBar
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        formatFilter={formatFilter}
-        setFormatFilter={setFormatFilter}
-      />
 
       {activeEventId &&
         events.find((e) => e.id === activeEventId) &&
@@ -102,17 +95,7 @@ function App() {
         />
       )}
 
-      <button
-        onClick={() => {
-          if (!session) {
-            setShowLogin(true);
-          }
-          setAdminMode(!adminMode);
-        }}
-        className="admin-toggle"
-      >
-        {adminMode ? 'Exit Admin Mode' : 'Enter Admin Mode'}
-      </button>
+
     </div>
   );
 }
