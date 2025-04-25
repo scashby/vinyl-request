@@ -2,39 +2,44 @@ import { searchDiscogsRelease } from './discogs';
 import { fetchAlbumArtFromiTunes } from './itunes';
 import { fetchAlbumFromMusicBrainz, fetchCoverArtFromMBID } from './musicbrainz';
 
-export const fetchAlbumCoverWithFallbacks = async (artist, title) => {
-  // 1. Try Discogs
+export async function fetchAlbumCoverWithFallbacks(artist, title) {
+  // Try Discogs first
   try {
     const discogsResult = await searchDiscogsRelease(artist, title);
     if (discogsResult && discogsResult.cover_image) {
+      console.log(`Fetched from Discogs: ${discogsResult.cover_image}`);
       return discogsResult.cover_image;
     }
-  } catch (err) {
-    console.warn(`Discogs fetch failed: ${err}`);
+  } catch (error) {
+    console.warn(`Discogs fetch failed for ${artist} - ${title}:`, error.message);
   }
 
-  // 2. Try iTunes
+  // Then try iTunes
   try {
     const itunesResult = await fetchAlbumArtFromiTunes(artist, title);
     if (itunesResult) {
+      console.log(`Fetched from iTunes: ${itunesResult}`);
       return itunesResult;
     }
-  } catch (err) {
-    console.warn(`iTunes fetch failed: ${err}`);
+  } catch (error) {
+    console.warn(`iTunes fetch failed for ${artist} - ${title}:`, error.message);
   }
 
-  // 3. Try MusicBrainz
+  // Then try MusicBrainz
   try {
-    const mbData = await fetchAlbumFromMusicBrainz(artist, title);
-    if (mbData?.id) {
-      const mbArt = await fetchCoverArtFromMBID(mbData.id);
-      if (mbArt) {
-        return mbArt;
+    const musicbrainzResult = await fetchAlbumFromMusicBrainz(artist, title);
+    if (musicbrainzResult && musicbrainzResult.id) {
+      const coverArtUrl = await fetchCoverArtFromMBID(musicbrainzResult.id);
+      if (coverArtUrl) {
+        console.log(`Fetched from MusicBrainz: ${coverArtUrl}`);
+        return coverArtUrl;
       }
     }
-  } catch (err) {
-    console.warn(`MusicBrainz fetch failed: ${err}`);
+  } catch (error) {
+    console.warn(`MusicBrainz fetch failed for ${artist} - ${title}:`, error.message);
   }
 
+  // If all fail
+  console.warn(`All fallback attempts failed for ${artist} - ${title}`);
   return null;
-};
+}
