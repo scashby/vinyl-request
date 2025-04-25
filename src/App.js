@@ -14,6 +14,7 @@ import AddAlbumArt from 'admin/AddAlbumArt';
 import AddTrackListings from 'admin/AddTrackListings';
 import ReturnToHome from 'admin/ReturnToHome';
 import LogoutAdmin from 'admin/LogoutAdmin';
+import BrowseCollectionPage from 'components/BrowseCollectionPage';
 
 import 'css/App.css';
 
@@ -108,6 +109,7 @@ function App() {
       <Route path="replace-track-listings" element={<AddTrackListings />} />
       <Route path="return-home" element={<ReturnToHome />} />
       <Route path="logout" element={<LogoutAdmin />} />
+      <Route path="/browse/:eventId" element={<BrowseCollectionPage />} />
     </Route>
 
 </Routes>

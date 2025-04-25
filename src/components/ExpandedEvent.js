@@ -6,6 +6,7 @@ import BrowseAlbums from './BrowseAlbums';
 import NowPlayingDisplay from './NowPlayingDisplay';
 import UpNextDisplay from './UpNextDisplay';
 import 'css/EventDisplay.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function ExpandedEvent({ event, onBack }) {
   const [requests, setRequests] = useState([]);
@@ -15,6 +16,7 @@ export default function ExpandedEvent({ event, onBack }) {
   const [name, setName] = useState('');
   const [nowPlaying, setNowPlaying] = useState(null);
   const [upNext, setUpNext] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchRequests() {
@@ -167,9 +169,10 @@ export default function ExpandedEvent({ event, onBack }) {
         voteRequest={voteRequest}
       />
 
-      <button onClick={() => setShowBrowser(!showBrowser)} className="browse-button">
-        🎧 {showBrowser ? 'Hide Collection' : 'Browse the collection and add your pick'}
+      <button onClick={() => navigate(`/browse/${event.id}`)} className="browse-button">
+        🎧 Browse the collection and add your pick
       </button>
+
 
       {showBrowser && (
         <BrowseAlbums
