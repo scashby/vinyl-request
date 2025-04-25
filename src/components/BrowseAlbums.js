@@ -108,6 +108,7 @@ const BrowseAlbums = ({
             onClick={() => handleAlbumClick(album.id)}
           >
             <div style={{ position: 'relative', width: '100%', height: '150px' }}>
+            {album.image_url ? (
               <img
                 src={album.image_url}
                 alt={`${album.artist} - ${album.title}`}
@@ -115,7 +116,6 @@ const BrowseAlbums = ({
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  display: album.image_url ? 'block' : 'none',
                 }}
                 onError={(e) => {
                   e.target.onerror = null;
@@ -124,26 +124,28 @@ const BrowseAlbums = ({
                   if (fallback) fallback.style.display = 'flex';
                 }}
               />
-              <div
-                className="album-placeholder"
-                style={{
-                  display: album.image_url ? 'none' : 'flex',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'black',
-                  color: 'white',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                  padding: '5px',
-                  fontSize: '0.9em',
-                }}
-              >
-                {album.artist} – {album.title}
-              </div>
+            ) : null}
+            <div
+              className="album-placeholder"
+              style={{
+                display: !album.image_url ? 'flex' : 'none',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'black',
+                color: 'white',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+                padding: '5px',
+                fontSize: '0.9em',
+              }}
+            >
+              {album.artist} – {album.title}
+            </div>
+
             </div>
 
 
