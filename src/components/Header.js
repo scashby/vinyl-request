@@ -20,15 +20,14 @@ const Header = ({ session, setSession, setAdminMode }) => {
   };
 
   return (
-    <header className="header">
-      <div className="logo">
-        <img src={logo} alt="Devil's Purse Logo" className="dp-logo" />
-        Vinyl Request
-      </div>
-      <div className="gear-icon" onClick={() => setShowAdminLogin(!showAdminLogin)}>
+    <header className="app-header">
+      <div className="admin-toggle" onClick={() => setShowAdminLogin(!showAdminLogin)}>
         ⚙️
       </div>
-
+      <div className="logo-title-container">
+        <img src={logo} alt="Devil's Purse Logo" className="app-logo" />
+        <h1 className="header-title">Devil's Purse BYO Vinyl (and Cassettes) Request Queue</h1>
+      </div>
       {showAdminLogin && (
         <div className="admin-login-panel">
           {!session ? (
