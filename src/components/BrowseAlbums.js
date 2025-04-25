@@ -3,6 +3,8 @@ import { supabase } from '../supabaseClient';
 import 'css/BrowseAlbums.css';
 import FilterBar from './FilterBar';
 import axios from 'axios';
+import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
+
 
 const BrowseAlbums = ({
   activeEventId,
@@ -20,6 +22,7 @@ const BrowseAlbums = ({
   const [mediaType, setMediaType] = useState('All');
 
   useEffect(() => {
+
     const fetchAlbums = async () => {
       const { data, error } = await supabase
         .from('collection')
@@ -36,16 +39,9 @@ const BrowseAlbums = ({
           if (album.image_url) return album;
     
           try {
-            // Try Discogs (basic search)
-            const response = await axios.get(
-              `https://itunes.apple.com/search?term=${encodeURIComponent(
-                album.artist + ' ' + album.title
-              )}&entity=album&limit=1`
-            );
-    
-            const result = response.data.results?.[0];
-            if (result?.artworkUrl100) {
-              return { ...album, image_url: result.artworkUrl100.replace('100x100bb.jpg', '300x300bb.jpg') };
+            const fallbackUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title);
+            if (fallbackUrl) {
+              return { ...album, image_url: fallbackUrl };
             }
           } catch (e) {
             console.warn(`Failed to fetch fallback art for ${album.artist} - ${album.title}`);
@@ -58,6 +54,7 @@ const BrowseAlbums = ({
       setAlbums(albumsWithImages);
       setFilteredAlbums(albumsWithImages);
     };
+    
     
 
     fetchAlbums();
