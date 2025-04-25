@@ -2,44 +2,44 @@ import { searchDiscogsRelease } from './discogs';
 import { fetchAlbumArtFromiTunes } from './itunes';
 import { fetchAlbumFromMusicBrainz, fetchCoverArtFromMBID } from './musicbrainz';
 
-export async function fetchAlbumCoverWithFallbacks(artist, title) {
-  // Try Discogs first
+export async function fetchAlbumCoverWithFallbacks(artist, album) {
   try {
-    const discogsResult = await searchDiscogsRelease(artist, title);
-    if (discogsResult && discogsResult.cover_image) {
-      console.log(`Fetched from Discogs: ${discogsResult.cover_image}`);
-      return discogsResult.cover_image;
+    // Try Discogs
+    const discogsResult = await searchDiscogsRelease(artist, album);
+    if (discogsResult) {
+      console.log(`Fetched from Discogs: ${discogsResult}`);
+      return discogsResult;
     }
-  } catch (error) {
-    console.warn(`Discogs fetch failed for ${artist} - ${title}:`, error.message);
+  } catch (err) {
+    console.error('Discogs search error:', err);
   }
 
-  // Then try iTunes
   try {
-    const itunesResult = await fetchAlbumArtFromiTunes(artist, title);
+    // Try iTunes
+    const itunesResult = await fetchAlbumArtFromiTunes(artist, album);
     if (itunesResult) {
       console.log(`Fetched from iTunes: ${itunesResult}`);
       return itunesResult;
     }
-  } catch (error) {
-    console.warn(`iTunes fetch failed for ${artist} - ${title}:`, error.message);
+  } catch (err) {
+    console.error('iTunes API request failed:', err);
   }
 
-  // Then try MusicBrainz
   try {
-    const musicbrainzResult = await fetchAlbumFromMusicBrainz(artist, title);
-    if (musicbrainzResult && musicbrainzResult.id) {
-      const coverArtUrl = await fetchCoverArtFromMBID(musicbrainzResult.id);
-      if (coverArtUrl) {
-        console.log(`Fetched from MusicBrainz: ${coverArtUrl}`);
-        return coverArtUrl;
+    // Try MusicBrainz
+    const mbRelease = await fetchAlbumFromMusicBrainz(artist, album);
+    if (mbRelease) {
+      const mbid = mbRelease.id;
+      const mbCoverUrl = await fetchCoverArtFromMBID(mbid);
+      if (mbCoverUrl) {
+        console.log(`Fetched from MusicBrainz: ${mbCoverUrl}`);
+        return mbCoverUrl;
       }
     }
-  } catch (error) {
-    console.warn(`MusicBrainz fetch failed for ${artist} - ${title}:`, error.message);
+  } catch (err) {
+    console.error('Error fetching from MusicBrainz:', err);
   }
 
-  // If all fail
-  console.warn(`All fallback attempts failed for ${artist} - ${title}`);
+  console.warn(`All fallback attempts failed for ${artist} - ${album}`);
   return null;
 }
