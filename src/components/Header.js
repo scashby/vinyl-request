@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import 'css/Header.css';
 import logo from '../assets/devils-purse-logo.png';
@@ -16,6 +16,25 @@ const Header = ({ session, setSession, setAdminMode }) => {
     if (error) console.error('Google login failed:', error.message);
   };
 
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setSession(session);
+      }
+    };
+  
+    getSession();
+  
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+    });
+  
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, [setSession]);
+  
   /*const handleLogout = async () => {
     await supabase.auth.signOut();
     setSession(null);
