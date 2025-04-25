@@ -151,23 +151,40 @@ const BrowseAlbums = ({
 
 
             {expandedId === album.id && (
-              <div className="request-form">
-                <select value={side} onChange={(e) => setSide(e.target.value)}>
-                  {['A', 'B', 'C', 'D', 'E', 'F'].map((s) => (
-                    <option key={s} value={s}>
-                      Side {s}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <button onClick={() => handleSubmit(album)}>Add to Queue</button>
-              </div>
-            )}
+                <div className="request-form">
+                  {/* Display sides and tracks if available */}
+                  {album.sides && (
+                    <div className="sides-listing">
+                      {Object.entries(album.sides).map(([sideName, tracks]) => (
+                        <div key={sideName}>
+                          <strong>Side {sideName}</strong>
+                          <ul>
+                            {tracks.map((track, index) => (
+                              <li key={index}>{track}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <select value={side} onChange={(e) => setSide(e.target.value)}>
+                    {['A', 'B', 'C', 'D', 'E', 'F'].map((s) => (
+                      <option key={s} value={s}>
+                        Side {s}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <button onClick={() => handleSubmit(album)}>Add to Queue</button>
+                </div>
+              )}
+
           </div>
         ))}
       </div>

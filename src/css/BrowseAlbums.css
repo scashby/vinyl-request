@@ -61,4 +61,23 @@
     font-size: 14px;
     padding: 1rem;
   }
+  .sides-listing {
+    margin-bottom: 10px;
+  }
+  
+  .sides-listing strong {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.1em;
+  }
+  
+  .sides-listing ul {
+    margin: 5px 0 10px 20px;
+    padding: 0;
+    list-style-type: disc;
+  }
+  
+  .sides-listing li {
+    margin: 2px 0;
+  }
   
