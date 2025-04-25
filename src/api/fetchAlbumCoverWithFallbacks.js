@@ -3,6 +3,7 @@ import { fetchAlbumArtFromiTunes } from './itunes';
 import { fetchAlbumFromMusicBrainz, fetchCoverArtFromMBID } from './musicbrainz';
 import { supabase } from '../supabaseClient';
 
+// MAIN FUNCTION
 export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
   const fallbackSources = [fetchFromDiscogs, fetchFromItunes, fetchFromMusicbrainz];
 
@@ -22,20 +23,24 @@ async function fetchFromDiscogs(artist, title, albumId) {
     const results = await searchDiscogsRelease(artist, title);
     if (results && results.length > 0) {
       const first = results[0];
-      
-      if (first.cover_image && albumId) {
-        await supabase
-          .from('collection')
-          .update({ image_url: first.cover_image })
-          .eq('id', albumId);
-      }
 
-      if (first.tracklist && albumId) {
-        const sides = formatDiscogsTracklist(first.tracklist);
-        await supabase
-          .from('collection')
-          .update({ sides })
-          .eq('id', albumId);
+      if (albumId) {
+        const updates = {};
+
+        if (first.cover_image) {
+          updates.image_url = first.cover_image;
+        }
+
+        if (first.tracklist) {
+          updates.sides = formatDiscogsTracklist(first.tracklist);
+        }
+
+        if (Object.keys(updates).length > 0) {
+          await supabase
+            .from('collection')
+            .update(updates)
+            .eq('id', albumId);
+        }
       }
 
       return first.cover_image || null;
