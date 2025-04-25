@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import 'css/Header.css';
+import logo from '../assets/devils-purse-logo.png';
 
 const Header = ({ session, setSession, setAdminMode }) => {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -20,7 +21,10 @@ const Header = ({ session, setSession, setAdminMode }) => {
 
   return (
     <header className="header">
-      <div className="logo">🎵 Vinyl Request</div>
+      <div className="logo">
+        <img src={logo} alt="Devil's Purse Logo" className="dp-logo" />
+        Vinyl Request
+      </div>
       <div className="gear-icon" onClick={() => setShowAdminLogin(!showAdminLogin)}>
         ⚙️
       </div>
