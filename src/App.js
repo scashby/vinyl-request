@@ -100,30 +100,23 @@ function App() {
             }
           />
 
-          <Route
-            path="/admin/*"
-            element={
-              adminMode && session ? (
-                <AdminPanel />
-              ) : showLogin ? (
-                <AuthWrapper />
-              ) : (
-                <></>
-              )
-            }
-          >
-            {adminMode && session && (
-              <>
-                <Route path="edit-events" element={<EditEvents />} />
-                <Route path="add-customer-vinyl" element={<AddCustomerVinyl />} />
-                <Route path="edit-queue" element={<EditQueue />} />
-                <Route path="replace-album-art" element={<AddAlbumArt />} />
-                <Route path="replace-track-listings" element={<AddTrackListings />} />
-                <Route path="return-home" element={<ReturnToHome />} />
-                <Route path="logout" element={<LogoutAdmin />} />
-              </>
-            )}
-          </Route>
+        {adminMode && session && (
+          <>
+            <Route path="/admin/*" element={<AdminPanel />} />
+            <Route path="/admin/edit-events" element={<EditEvents />} />
+            <Route path="/admin/add-customer-vinyl" element={<AddCustomerVinyl />} />
+            <Route path="/admin/edit-queue" element={<EditQueue />} />
+            <Route path="/admin/replace-album-art" element={<AddAlbumArt />} />
+            <Route path="/admin/replace-track-listings" element={<AddTrackListings />} />
+            <Route path="/admin/return-home" element={<ReturnToHome />} />
+            <Route path="/admin/logout" element={<LogoutAdmin />} />
+          </>
+        )}
+
+        {showLogin && !session && (
+          <Route path="/admin/*" element={<AuthWrapper />} />
+        )}
+
 
 
         </Routes>
