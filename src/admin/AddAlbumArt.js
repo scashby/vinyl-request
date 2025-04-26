@@ -13,7 +13,9 @@ const AddAlbumArt = () => {
       const { data, error } = await supabase
         .from('collection')
         .select('*')
-        .or('image_url.eq.no,image_url.is.null');
+        .or('image_url.eq.no,image_url.is.null')
+        .order('artist', { ascending: true });
+
 
       if (error) {
         console.error('Error fetching albums:', error);
@@ -34,22 +36,54 @@ const AddAlbumArt = () => {
     );
   };
 
-  const handleSave = async (id, imageUrl) => {
+  const handleSave = async (id, artist, title, imageUrl) => {
     setSaving(true);
     const { error } = await supabase
       .from('collection')
-      .update({ image_url: imageUrl })
+      .update({ artist, title, image_url: imageUrl })
       .eq('id', id);
-
+  
     if (error) {
-      console.error('Failed to update image_url:', error);
-      alert('Failed to update image URL. Check console for details.');
-    } else {
-      alert('Image URL updated successfully!');
+      console.error('Failed to update album:', error);
     }
     setSaving(false);
   };
-
+  
+  const handleArtistChange = (id, newArtist) => {
+    setAlbums((prev) =>
+      prev.map((album) =>
+        album.id === id ? { ...album, artist: newArtist } : album
+      )
+    );
+  };
+  
+  const handleTitleChange = (id, newTitle) => {
+    setAlbums((prev) =>
+      prev.map((album) =>
+        album.id === id ? { ...album, title: newTitle } : album
+      )
+    );
+  };
+  const handleSaveAll = async () => {
+    setSaving(true);
+    for (const album of albums) {
+      const { error } = await supabase
+        .from('collection')
+        .update({
+          artist: album.artist,
+          title: album.title,
+          image_url: album.image_url,
+        })
+        .eq('id', album.id);
+  
+      if (error) {
+        console.error(`Failed to update album ID ${album.id}:`, error);
+      }
+    }
+    alert('All changes saved!');
+    setSaving(false);
+  };
+  
   return (
     <div style={{ padding: '20px' }}>
       <h2>🖼️ Add Album Art (Manual Fix)</h2>
@@ -72,8 +106,22 @@ const AddAlbumArt = () => {
               <tbody>
                 {albums.map((album) => (
                   <tr key={album.id} style={{ borderBottom: '1px solid #ccc' }}>
-                    <td>{album.artist}</td>
-                    <td>{album.title}</td>
+                    <td>
+                      <input
+                        type="text"
+                        value={album.artist || ''}
+                        onChange={(e) => handleArtistChange(album.id, e.target.value)}
+                        style={{ width: '90%' }}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={album.title || ''}
+                        onChange={(e) => handleTitleChange(album.id, e.target.value)}
+                        style={{ width: '90%' }}
+                      />
+                    </td>
                     <td>
                       <input
                         type="text"
@@ -83,13 +131,22 @@ const AddAlbumArt = () => {
                       />
                     </td>
                     <td>
-                      <button onClick={() => handleSave(album.id, album.image_url)} disabled={saving}>
-                        Save
-                      </button>
+                    <button onClick={() => handleSave(album.id, album.artist, album.title, album.image_url)} disabled={saving}>
+                      Save
+                    </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan="4" style={{ textAlign: 'center', paddingTop: '10px' }}>
+                    <button onClick={handleSaveAll} disabled={saving}>
+                      Save All Changes
+                    </button>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           )}
         </div>
