@@ -3,80 +3,74 @@ import { supabase } from '../supabaseClient';
 
 const AddAlbumArt = () => {
   const [albums, setAlbums] = useState([]);
-  const [sortBy, setSortBy] = useState('artist');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [showOnlyMissing, setShowOnlyMissing] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [onlyMissingArt, setOnlyMissingArt] = useState(false);
+  const [sortField, setSortField] = useState('artist');
 
   useEffect(() => {
     fetchAlbums();
   }, []);
 
-  const fetchAlbums = async () => {
-    const { data, error } = await supabase
-      .from('collection')
-      .select('*')
-      .order('artist', { ascending: true });
-
+  async function fetchAlbums() {
+    const { data, error } = await supabase.from('collection').select('*');
     if (error) {
       console.error('Error fetching albums:', error);
     } else {
       setAlbums(data);
     }
-  };
+  }
 
-  const handleSave = async (id, artist, title, imageUrl) => {
-    setSaving(true);
+  function handleInputChange(id, field, value) {
+    setAlbums(prev =>
+      prev.map(album =>
+        album.id === id ? { ...album, [field]: value } : album
+      )
+    );
+  }
 
-    const cleanImageUrl = imageUrl?.startsWith('no') ? imageUrl.slice(2) : imageUrl;
-
-    const { error } = await supabase
-      .from('collection')
-      .update({ artist, title, image_url: cleanImageUrl })
-      .eq('id', id);
-
+  async function handleSave(album) {
+    const updates = {
+      artist: album.artist,
+      title: album.title,
+      image_url: album.image_url,
+    };
+    const { error } = await supabase.from('collection').update(updates).eq('id', album.id);
     if (error) {
-      console.error('Failed to update album:', error);
+      console.error('Error updating album:', error);
     } else {
-      fetchAlbums(); // Refresh after save
+      console.log('Album updated successfully');
     }
-    setSaving(false);
-  };
+  }
 
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('asc');
+  async function handleSaveAll() {
+    for (const album of albums) {
+      await handleSave(album);
     }
-  };
+    console.log('All albums saved.');
+  }
 
-  const sortedAlbums = [...albums]
-    .filter((album) => {
-      if (showOnlyMissing) {
-        return !album.image_url || album.image_url === 'no';
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      const aField = a[sortBy]?.toLowerCase() || '';
-      const bField = b[sortBy]?.toLowerCase() || '';
-      if (aField < bField) return sortOrder === 'asc' ? -1 : 1;
-      if (aField > bField) return sortOrder === 'asc' ? 1 : -1;
-      return 0;
-    });
+  function handleSort(field) {
+    setSortField(field);
+    const sorted = [...albums].sort((a, b) =>
+      (a[field] || '').localeCompare(b[field] || '')
+    );
+    setAlbums(sorted);
+  }
+
+  const filteredAlbums = onlyMissingArt
+    ? albums.filter(album => !album.image_url || album.image_url === 'no')
+    : albums;
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>Edit Album Art</h2>
-      <button onClick={() => setShowOnlyMissing(!showOnlyMissing)} style={{ marginBottom: '10px' }}>
-        {showOnlyMissing ? 'Show All Albums' : 'Show Only Missing Art'}
+      <h2>Add or Edit Album Art</h2>
+      <button onClick={() => setOnlyMissingArt(prev => !prev)}>
+        {onlyMissingArt ? 'Show All' : 'Show Only Missing Artwork'}
       </button>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <button onClick={handleSaveAll} style={{ marginLeft: '10px' }}>Save All</button>
+      <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th>Cover</th>
+            <th>Image</th>
             <th onClick={() => handleSort('artist')} style={{ cursor: 'pointer' }}>Artist</th>
             <th onClick={() => handleSort('title')} style={{ cursor: 'pointer' }}>Title</th>
             <th>Image URL</th>
@@ -84,52 +78,38 @@ const AddAlbumArt = () => {
           </tr>
         </thead>
         <tbody>
-          {sortedAlbums.map((album) => (
+          {filteredAlbums.map(album => (
             <tr key={album.id} style={{ borderBottom: '1px solid #ccc' }}>
               <td>
                 {album.image_url && album.image_url !== 'no' ? (
-                  <img
-                    src={album.image_url}
-                    alt="album cover"
-                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = '';
-                      e.target.style.backgroundColor = 'black';
-                    }}
-                  />
+                  <img src={album.image_url} alt={album.title} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
                 ) : (
                   <div style={{ width: '50px', height: '50px', backgroundColor: 'black' }} />
                 )}
               </td>
               <td>
                 <input
-                  type="text"
-                  defaultValue={album.artist}
-                  onChange={(e) => (album.artist = e.target.value)}
-                  style={{ width: '90%' }}
+                  value={album.artist || ''}
+                  onChange={(e) => handleInputChange(album.id, 'artist', e.target.value)}
+                  style={{ width: '100%' }}
                 />
               </td>
               <td>
                 <input
-                  type="text"
-                  defaultValue={album.title}
-                  onChange={(e) => (album.title = e.target.value)}
-                  style={{ width: '90%' }}
+                  value={album.title || ''}
+                  onChange={(e) => handleInputChange(album.id, 'title', e.target.value)}
+                  style={{ width: '100%' }}
                 />
               </td>
               <td>
                 <input
-                  type="text"
-                  defaultValue={album.image_url === 'no' ? '' : album.image_url}
-                  onChange={(e) => (album.image_url = e.target.value)}
-                  style={{ width: '90%' }}
+                  value={album.image_url === 'no' ? '' : album.image_url || ''}
+                  onChange={(e) => handleInputChange(album.id, 'image_url', e.target.value)}
+                  style={{ width: '100%' }}
                 />
               </td>
               <td>
-                <button onClick={() => handleSave(album.id, album.artist, album.title, album.image_url)} disabled={saving}>
-                  Save
-                </button>
+                <button onClick={() => handleSave(album)}>Save</button>
               </td>
             </tr>
           ))}
