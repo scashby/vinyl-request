@@ -186,7 +186,20 @@ const BrowseAlbums = ({
                 onClick={(e) => e.stopPropagation()}
               >
                   {/* Display sides and tracks if available */}
-                  {album.sides && renderSidesAndTracks(album)}
+                  {album.sides && (
+                    <div className="sides-listing">
+                      {Object.entries(album.sides).map(([sideName, tracks]) => (
+                        <div key={sideName}>
+                          <strong>Side {sideName}</strong>
+                          <ul>
+                            {tracks.map((track, index) => (
+                              <li key={index}>{track}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   <select value={side} onChange={(e) => setSide(e.target.value)}>
                     {['A', 'B', 'C', 'D', 'E', 'F'].map((s) => (
