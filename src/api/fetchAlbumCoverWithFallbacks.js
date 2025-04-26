@@ -21,8 +21,20 @@ export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
 async function fetchFromDiscogs(artist, title, albumId) {
   try {
     const proxyUrl = `/api/proxyFetch?url=${encodeURIComponent(`https://api.discogs.com/database/search?q=${artist} ${title}&token=KVVAFUlIzOPCUFNhtVXZJenwBHhGmFrmkwYgzQXD`)}`;
-    const response = await fetch(proxyUrl);
-    const data = await response.json();
+    try {
+      const response = await fetch(proxyUrl);
+    
+      if (!response.ok) {
+        console.error('Proxy fetch failed:', response.status, response.statusText);
+        return null;
+      }
+    
+      const data = await response.json();
+      console.log('Proxy fetch successful:', data);
+    } catch (error) {
+      console.error('Proxy fetch error:', error);
+      return null;
+    }
     const results = data.results || [];
 
     if (results && results.length > 0) {
