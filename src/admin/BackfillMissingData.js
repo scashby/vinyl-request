@@ -18,7 +18,8 @@ const BackfillMissingData = () => {
     const { data, error } = await supabase
       .from('collection')
       .select('*')
-      .or('image_url.is.null,image_url.eq.,sides.is.null,tracklists.is.null,tracklists.eq.');
+      .filter('image_url', 'is', null)
+      .or('image_url.eq.,sides.is.null,tracklists.is.null,tracklists.eq.');
   
     if (error) {
       console.error('Error fetching missing records:', error);
@@ -32,6 +33,7 @@ const BackfillMissingData = () => {
     setMessage(`Found ${data.length} record(s) with missing data.`);
     setLoading(false);
   };
+  
   
 
   const fetchFromDiscogs = async (artist, title) => {
