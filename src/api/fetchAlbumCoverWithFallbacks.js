@@ -5,17 +5,28 @@ import { supabase } from '../supabaseClient';
 
 // MAIN FUNCTION
 export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
-  console.log('fetchAlbumCoverWithFallbacks called for:', artist, title);
+  console.log(`Starting album art search for: Artist = "${artist}", Title = "${title}"`);
+  
   const fallbackSources = [fetchFromDiscogs, fetchFromItunes, fetchFromMusicbrainz];
 
   for (const fetchSource of fallbackSources) {
-    const url = await fetchSource(artist, title, albumId);
-    if (url) {
-      return url;
+    try {
+      const url = await fetchSource(artist, title, albumId);
+      if (url) {
+        console.log(`Found album art from source: ${fetchSource.name}`);
+        return url;
+      } else {
+        console.log(`No album art found from source: ${fetchSource.name}`);
+      }
+    } catch (error) {
+      console.error(`Error trying ${fetchSource.name} for`, artist, title, error);
     }
   }
+
+  console.log(`No album art found for: "${artist}" - "${title}" from any source.`);
   return null;
 }
+
 
 // --- FETCHERS ---
 
