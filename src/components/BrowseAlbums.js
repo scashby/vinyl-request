@@ -42,26 +42,27 @@ const BrowseAlbums = ({
           if (fetchedImageUrl) {
             console.log(`Successfully fetched image for ${album.artist} - ${album.title}: ${fetchedImageUrl}`);
             try {
-              const { data: updatedData, error: updateError } = await supabase
+              const { error } = await supabase
                 .from('collection')
                 .update({ image_url: fetchedImageUrl })
-                .eq('id', album.id)
-                .select(); // <- ADD THIS to force Supabase to return the updated row!
-              if (updateError) {
-                console.error('Error updating image_url in Supabase:', updateError);
+                .eq('id', album.id);
+      
+              if (error) {
+                console.error('Error updating image_url in Supabase:', error);
               } else {
-                console.log('Updated record:', updatedData);
-                return { ...album, image_url: fetchedImageUrl };
+                console.log(`Updated image_url in Supabase for ${album.artist} - ${album.title}`);
               }
             } catch (err) {
               console.error('Unexpected error during Supabase update:', err);
             }
+            return { ...album, image_url: fetchedImageUrl }; // <<< CRITICAL! Always return updated album object
           } else {
             console.warn(`No image found for ${album.artist} - ${album.title}`);
           }
           return album;
         })
       );
+      
     
       setAlbums(albumsWithImages);
       setFilteredAlbums(albumsWithImages);
