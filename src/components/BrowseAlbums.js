@@ -166,7 +166,10 @@ const BrowseAlbums = ({
             </div>
 
             {expandedId === album.id && (
-                <div className="request-form">
+              <div
+                className="request-form"
+                onClick={(e) => e.stopPropagation()}
+              >
                   {/* Display sides and tracks if available */}
                   {album.sides && (
                     <div className="sides-listing">
