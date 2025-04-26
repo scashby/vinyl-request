@@ -37,20 +37,23 @@ const BrowseAlbums = ({
       const albumsWithImages = await Promise.all(
         data.map(async (album) => {
           if (album.image_url) return album;
-    
-          try {
-            const fallbackUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
-            if (fallbackUrl) {
-              return { ...album, image_url: fallbackUrl };
+      
+          const fetchedImageUrl = await fetchAlbumImage(album.artist, album.title);
+          if (fetchedImageUrl) {
+            try {
+              await supabase
+                .from('collection')
+                .update({ image_url: fetchedImageUrl })
+                .eq('id', album.id);
+            } catch (error) {
+              console.error('Error updating image_url in Supabase:', error);
             }
-          } catch (e) {
-            console.warn(`Failed to fetch fallback art for ${album.artist} - ${album.title}`);
+            return { ...album, image_url: fetchedImageUrl };
           }
-          
-    
           return album;
         })
       );
+      
     
       setAlbums(albumsWithImages);
       setFilteredAlbums(albumsWithImages);
