@@ -164,6 +164,20 @@ const BrowseAlbums = ({
             <div style={{ marginTop: '8px', textAlign: 'center', fontSize: '0.9rem' }}>
               {album.artist} – {album.title}
             </div>
+            {album.sides && (
+              <div className="sides-listing" style={{ marginTop: '8px', fontSize: '0.8rem', textAlign: 'center' }}>
+                {Object.entries(album.sides).map(([sideName, tracks]) => (
+                  <div key={sideName} style={{ marginBottom: '4px' }}>
+                    <strong>Side {sideName}</strong>
+                    <ul style={{ listStyleType: 'none', padding: 0, margin: '4px 0' }}>
+                      {tracks.map((track, index) => (
+                        <li key={index}>{track}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {expandedId === album.id && (
               <div
