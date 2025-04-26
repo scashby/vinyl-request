@@ -38,9 +38,12 @@ const AddAlbumArt = () => {
 
   const handleSave = async (id, artist, title, imageUrl) => {
     setSaving(true);
+  
+    const cleanImageUrl = imageUrl?.startsWith('no') ? imageUrl.slice(2) : imageUrl;
+  
     const { error } = await supabase
       .from('collection')
-      .update({ artist, title, image_url: imageUrl })
+      .update({ artist, title, image_url: cleanImageUrl })
       .eq('id', id);
   
     if (error) {
@@ -48,6 +51,7 @@ const AddAlbumArt = () => {
     }
     setSaving(false);
   };
+  
   
   const handleArtistChange = (id, newArtist) => {
     setAlbums((prev) =>
