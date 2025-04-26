@@ -117,8 +117,13 @@ const AddAlbumArt = () => {
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+        </table>
+        <div style={{ marginTop: '20px' }}>
+          <button onClick={handleSaveAll}>Save All</button>
+        </div>
+
+        </div>
+
   );
 };
 
