@@ -3,7 +3,6 @@
 import { fetchAlbumArtFromiTunes } from './itunes';
 import { fetchAlbumFromMusicBrainz, fetchCoverArtFromMBID } from './musicbrainz';
 import { supabase } from '../supabaseClient';
-import { proxyFetch } from './proxyFetch';
 import { formatDiscogsTracklist } from './discogs';
 
 // MAIN FUNCTION
@@ -30,7 +29,7 @@ export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
   return null;
 }
 
-// DISCOS Fallback using Proxy
+// DISCOSGS Fallback using Proxy
 async function fetchFromDiscogs(artist, title, albumId) {
   try {
     const query = encodeURIComponent(`${artist} ${title}`);
@@ -76,32 +75,46 @@ async function fetchFromDiscogs(artist, title, albumId) {
   return null;
 }
 
-
-// ITUNES fallback
+// ITUNES fallback (also via proxy)
 async function fetchFromItunes(artist, title) {
   try {
-    const url = await fetchAlbumArtFromiTunes(artist, title);
-    if (url) {
-      return url;
+    const query = encodeURIComponent(`${artist} ${title}`);
+    const url = `/api/proxyFetch?url=${encodeURIComponent(`https://itunes.apple.com/search?term=${query}&entity=album&limit=1`)}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`iTunes proxy fetch failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (data.results && data.results.length > 0) {
+      return data.results[0].artworkUrl100.replace('100x100bb.jpg', '600x600bb.jpg');
     }
   } catch (error) {
-    console.error('iTunes fetch error:', error);
+    console.error('iTunes proxy fetch error:', error);
   }
   return null;
 }
 
-// MUSICBRAINZ fallback
+// MUSICBRAINZ fallback (also via proxy)
 async function fetchFromMusicbrainz(artist, title) {
   try {
-    const mbid = await fetchAlbumFromMusicBrainz(artist, title);
-    if (mbid) {
-      const url = await fetchCoverArtFromMBID(mbid);
-      if (url) {
-        return url;
-      }
+    const query = encodeURIComponent(`${artist} ${title}`);
+    const url = `/api/proxyFetch?url=${encodeURIComponent(`https://musicbrainz.org/ws/2/release/?query=artist:${artist}%20AND%20release:${title}&fmt=json`)}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`MusicBrainz proxy fetch failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (data.releases && data.releases.length > 0) {
+      const release = data.releases[0];
+      const coverArtUrl = `https://coverartarchive.org/release/${release.id}/front`; // No need to proxy this simple GET
+      return coverArtUrl;
     }
   } catch (error) {
-    console.error('MusicBrainz fetch error:', error);
+    console.error('MusicBrainz proxy fetch error:', error);
   }
   return null;
 }
