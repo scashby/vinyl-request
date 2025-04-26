@@ -55,6 +55,13 @@ const BrowseAlbums = ({
             .eq('artist', album.artist)
             .eq('title', album.title);
 
+            if (updateError) {
+              console.error('Supabase update error:', updateError);
+            } else {
+              console.log('Supabase update successful for:', updatedAlbum.artist, updatedAlbum.title);
+            }
+
+
 
             console.log(`Trying to update album by artist/title:`, {
               artist: album.artist,
