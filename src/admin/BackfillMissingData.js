@@ -93,7 +93,7 @@ const BackfillMissingData = () => {
     return null;
   };
 
-  const backfillData = async () => {
+  cconst backfillData = async () => {
     setLoading(true);
     setMessage('Starting real backfill...');
     console.log('Starting backfill process...');
@@ -103,26 +103,38 @@ const BackfillMissingData = () => {
       console.log(`Processing record ID ${id}: ${artist} - ${title}`);
   
       let fetchedData = await fetchFromDiscogs(artist, title);
-      if (!fetchedData || !fetchedData.image_url) fetchedData = await fetchFromiTunes(artist, title);
-      if (!fetchedData || !fetchedData.image_url) fetchedData = await fetchFromMusicBrainz(artist, title);
+      if (!fetchedData) fetchedData = await fetchFromiTunes(artist, title);
+      if (!fetchedData) fetchedData = await fetchFromMusicBrainz(artist, title);
   
-      if (fetchedData && fetchedData.image_url) {
-        console.log(`Fetched data for ID ${id}:`, fetchedData);
-        const { error: updateError } = await supabase
-          .from('collection')
-          .update({
-            image_url: fetchedData.image_url,
-            tracklists: fetchedData.title || record.tracklists,
-          })
-          .eq('id', id);
+      if (!fetchedData) {
+        console.warn(`No data found for ${artist} - ${title}. Skipping.`);
+        continue;
+      }
   
-        if (updateError) {
-          console.error(`Error updating record ID ${id}:`, updateError);
-        } else {
-          console.log(`Successfully updated record ID ${id}`);
-        }
+      const updates = {};
+  
+      if (fetchedData.image_url) {
+        updates.image_url = fetchedData.image_url;
+      }
+  
+      if (fetchedData.title && !record.tracklists) {
+        updates.tracklists = fetchedData.title;
+      }
+  
+      if (Object.keys(updates).length === 0) {
+        console.warn(`No updates available for ${artist} - ${title}. Skipping.`);
+        continue;
+      }
+  
+      const { error } = await supabase
+        .from('collection')
+        .update(updates)
+        .eq('id', id);
+  
+      if (error) {
+        console.error(`Failed to update ${artist} - ${title}:`, error);
       } else {
-        console.warn(`No usable image found for ID ${id}, skipping update.`);
+        console.log(`Successfully updated ${artist} - ${title}.`);
       }
     }
   
@@ -130,6 +142,7 @@ const BackfillMissingData = () => {
     setLoading(false);
     console.log('Backfill process complete.');
   };
+  
   
 
   return (
