@@ -51,8 +51,7 @@ const AddAlbumArt = () => {
     }
     setSaving(false);
   };
-  
-  
+    
   const handleArtistChange = (id, newArtist) => {
     setAlbums((prev) =>
       prev.map((album) =>
