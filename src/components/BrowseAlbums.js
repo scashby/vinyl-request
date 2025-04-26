@@ -51,20 +51,18 @@ const BrowseAlbums = ({
             
             console.log(`Fetched image URL: ${imageStatus}`);
           
-            if (imageStatus && imageStatus !== 'no') {
-              const { error: updateError } = await supabase
-                .from('collection')
-                .update({ image_url: imageStatus })
-                .eq('id', album.id);
-              if (updateError) {
-                console.error('Failed to update image_url in Supabase for', album.artist, album.title, updateError);
-              } else {
-                console.log(`Updated album ${album.artist} - ${album.title} with real image URL.`);
-              }
+            const { error: updateError } = await supabase
+              .from('collection')
+              .update({ image_url: imageStatus })
+              .eq('id', album.id);
+          
+            if (updateError) {
+              console.error('Failed to update image_url in Supabase for', album.artist, album.title, updateError);
             } else {
-              console.log(`No image found for ${album.artist} - ${album.title}, leaving as 'no'.`);
+              console.log(`Successfully updated Supabase: ${album.artist} - ${album.title} ➔ ${imageStatus}`);
             }
           }
+          
           
           
           
