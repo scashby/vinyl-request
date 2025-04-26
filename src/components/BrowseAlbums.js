@@ -40,20 +40,26 @@ const BrowseAlbums = ({
       
           const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title);
           if (fetchedImageUrl) {
-
+            console.log(`Successfully fetched image for ${album.artist} - ${album.title}: ${fetchedImageUrl}`);
             try {
-              await supabase
+              const { error } = await supabase
                 .from('collection')
                 .update({ image_url: fetchedImageUrl })
                 .eq('id', album.id);
-            } catch (error) {
-              console.error('Error updating image_url in Supabase:', error);
+              if (error) {
+                console.error('Error updating image_url in Supabase:', error);
+              }
+            } catch (err) {
+              console.error('Unexpected error during Supabase update:', err);
             }
             return { ...album, image_url: fetchedImageUrl };
+          } else {
+            console.warn(`No image found for ${album.artist} - ${album.title}`);
           }
           return album;
         })
       );
+
       
     
       setAlbums(albumsWithImages);
