@@ -38,7 +38,7 @@ const BrowseAlbums = ({
         data.map(async (album) => {
           if (album.image_url) return album;
       
-          const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title);
+          const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
           if (fetchedImageUrl) {
             console.log(`Successfully fetched image for ${album.artist} - ${album.title}: ${fetchedImageUrl}`);
             try {
