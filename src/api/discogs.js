@@ -29,3 +29,25 @@ export async function getDiscogsRelease(releaseId) {
     return null;
   }
 }
+export function formatDiscogsTracklist(tracklist) {
+  if (!tracklist || tracklist.length === 0) {
+    return [];
+  }
+
+  const sides = {};
+  let currentSide = 'A'; // Start with Side A
+
+  for (const track of tracklist) {
+    // Discogs sometimes includes headings like 'Side A', 'Side B', etc.
+    if (track.type_ === 'heading' && track.title.match(/side\s+[a-z]/i)) {
+      currentSide = track.title.trim().split(/\s+/).pop().toUpperCase();
+    } else if (track.type_ === 'track') {
+      if (!sides[currentSide]) {
+        sides[currentSide] = [];
+      }
+      sides[currentSide].push(track.title);
+    }
+  }
+
+  return sides;
+}
