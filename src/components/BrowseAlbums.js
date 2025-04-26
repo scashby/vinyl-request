@@ -42,15 +42,24 @@ const BrowseAlbums = ({
             const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title);
             const imageStatus = fetchedImageUrl ? 'yes' : 'no';
             updatedAlbum.image_url = imageStatus;
-            const { error: updateError } = await supabase
+            const { data: updateData, error: updateError } = await supabase
               .from('collection')
               .update({ image_url: imageStatus })
               .eq('id', album.id);
+
+            console.log(`Trying to update album:`, {
+              artist: album.artist,
+              title: album.title,
+              id: album.id,
+              imageStatus: imageStatus
+            });
+
             if (updateError) {
               console.error('Failed to update image_url status in Supabase for', album.artist, album.title, updateError);
             } else {
-              console.log(`Updated album ${album.artist} - ${album.title} with image_url = "${imageStatus}"`);
+              console.log(`Update result from Supabase:`, updateData);
             }
+
           }
           
     
