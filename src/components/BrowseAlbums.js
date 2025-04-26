@@ -43,21 +43,29 @@ const BrowseAlbums = ({
           let updatedAlbum = { ...album };
           console.log('Processing album:', album.artist, album.title, 'Image URL:', album.image_url);
 
-          if (!album.image_url) {
+          if (!album.image_url || album.image_url === 'no') {
             console.log('Fetching cover for:', album.artist, album.title);
             const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
+            
             const imageStatus = fetchedImageUrl ? fetchedImageUrl : 'no';
-            updatedAlbum.image_url = imageStatus;
-            const { error: updateError } = await supabase
-              .from('collection')
-              .update({ image_url: imageStatus })
-              .eq('id', album.id);
-            if (updateError) {
-              console.error('Failed to update image_url in Supabase for', album.artist, album.title, updateError);
+            
+            console.log(`Fetched image URL: ${imageStatus}`);
+          
+            if (imageStatus && imageStatus !== 'no') {
+              const { error: updateError } = await supabase
+                .from('collection')
+                .update({ image_url: imageStatus })
+                .eq('id', album.id);
+              if (updateError) {
+                console.error('Failed to update image_url in Supabase for', album.artist, album.title, updateError);
+              } else {
+                console.log(`Updated album ${album.artist} - ${album.title} with real image URL.`);
+              }
             } else {
-              console.log(`Updated album ${album.artist} - ${album.title} with image_url = "${imageStatus}"`);
+              console.log(`No image found for ${album.artist} - ${album.title}, leaving as 'no'.`);
             }
           }
+          
           
           
     
