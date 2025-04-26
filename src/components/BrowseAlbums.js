@@ -29,9 +29,12 @@ const BrowseAlbums = ({
         .from('collection')
         .select('*')
         .order('artist', { ascending: true });
-    
-      if (error) {
-        console.error('Error fetching albums:', error);
+
+        console.log('Albums fetched from Supabase:', data ? data.length : 'No data');
+        
+        if (error) {
+          console.error('Error fetching albums:', error);
+        
         return;
       }
     
