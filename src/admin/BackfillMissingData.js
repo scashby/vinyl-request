@@ -97,39 +97,40 @@ const BackfillMissingData = () => {
     setLoading(true);
     setMessage('Starting real backfill...');
     console.log('Starting backfill process...');
-
+  
     for (const record of missingRecords) {
       const { id, artist, title } = record;
       console.log(`Processing record ID ${id}: ${artist} - ${title}`);
-
+  
       let fetchedData = await fetchFromDiscogs(artist, title);
-      if (!fetchedData) fetchedData = await fetchFromiTunes(artist, title);
-      if (!fetchedData) fetchedData = await fetchFromMusicBrainz(artist, title);
-
-      if (fetchedData) {
+      if (!fetchedData || !fetchedData.image_url) fetchedData = await fetchFromiTunes(artist, title);
+      if (!fetchedData || !fetchedData.image_url) fetchedData = await fetchFromMusicBrainz(artist, title);
+  
+      if (fetchedData && fetchedData.image_url) {
         console.log(`Fetched data for ID ${id}:`, fetchedData);
         const { error: updateError } = await supabase
           .from('collection')
           .update({
-            image_url: fetchedData.image_url || record.image_url,
+            image_url: fetchedData.image_url,
             tracklists: fetchedData.title || record.tracklists,
           })
           .eq('id', id);
-
+  
         if (updateError) {
           console.error(`Error updating record ID ${id}:`, updateError);
         } else {
           console.log(`Successfully updated record ID ${id}`);
         }
       } else {
-        console.warn(`No data found for ID ${id}, skipping.`);
+        console.warn(`No usable image found for ID ${id}, skipping update.`);
       }
     }
-
+  
     setMessage('Real backfill complete! Please review in admin panel.');
     setLoading(false);
     console.log('Backfill process complete.');
   };
+  
 
   return (
     <div className="admin-section">
