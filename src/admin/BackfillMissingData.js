@@ -93,7 +93,7 @@ const BackfillMissingData = () => {
     return null;
   };
 
-  cconst backfillData = async () => {
+  const backfillData = async () => {
     setLoading(true);
     setMessage('Starting real backfill...');
     console.log('Starting backfill process...');
