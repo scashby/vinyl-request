@@ -15,6 +15,7 @@ import AddTrackListings from 'admin/AddTrackListings';
 import ReturnToHome from 'admin/ReturnToHome';
 import LogoutAdmin from 'admin/LogoutAdmin';
 import BrowseCollectionPage from 'components/BrowseCollectionPage';
+import BackfillMissingData from 'admin/BackfillMissingData';
 
 import 'css/App.css';
 
@@ -108,6 +109,7 @@ function App() {
       <Route path="edit-queue" element={<EditQueue />} />
       <Route path="replace-album-art" element={<AddAlbumArt />} />
       <Route path="replace-track-listings" element={<AddTrackListings />} />
+      <Route path="backfill-missing-data" element={<BackfillMissingData />} />
       <Route path="return-home" element={<ReturnToHome />} />
       <Route path="logout" element={<LogoutAdmin />} />
     </Route>
