@@ -12,11 +12,11 @@ export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
   for (const fetchSource of fallbackSources) {
     try {
       const url = await fetchSource(artist, title, albumId);
-      if (url) {
-        console.log(`Found album art from source: ${fetchSource.name}`);
-        return url;
+      if (url && url !== 'no') {
+        console.log(`Found album art URL from source: ${fetchSource.name} ➔ ${url}`);
+        return url; // Return the real URL
       } else {
-        console.log(`No album art found from source: ${fetchSource.name}`);
+        console.log(`No image found from source: ${fetchSource.name}`);
       }
     } catch (error) {
       console.error(`Error trying ${fetchSource.name} for`, artist, title, error);
@@ -24,9 +24,9 @@ export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
   }
 
   console.log(`No album art found for: "${artist}" - "${title}" from any source.`);
-return 'no';
-
+  return null; // Explicitly return null if no image found
 }
+
 
 
 // --- FETCHERS ---
