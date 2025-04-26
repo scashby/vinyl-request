@@ -34,8 +34,13 @@ export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
 async function fetchFromDiscogs(artist, title, albumId) {
   try {
     const query = encodeURIComponent(`${artist} ${title}`);
-    const discogsApiUrl = `https://api.discogs.com/database/search?q=${query}&type=release&per_page=1`;
-    const response = await proxyFetch(discogsApiUrl);
+    const apiUrl = `https://api.discogs.com/database/search?q=${query}&type=release&per_page=1`;
+
+    const response = await fetch(`/api/proxyFetch?url=${encodeURIComponent(apiUrl)}`);
+    if (!response.ok) {
+      throw new Error(`Proxy fetch failed with status: ${response.status}`);
+    }
+
     const data = await response.json();
 
     if (data.results && data.results.length > 0) {
@@ -70,6 +75,7 @@ async function fetchFromDiscogs(artist, title, albumId) {
   }
   return null;
 }
+
 
 // ITUNES fallback
 async function fetchFromItunes(artist, title) {
