@@ -1,18 +1,21 @@
-import { searchDiscogsRelease } from './discogs';
+// src/api/fetchAlbumCoverWithFallbacks.js
+
 import { fetchAlbumArtFromiTunes } from './itunes';
 import { fetchAlbumFromMusicBrainz, fetchCoverArtFromMBID } from './musicbrainz';
 import { supabase } from '../supabaseClient';
+import { proxyFetch } from './proxyFetch';
+import { formatDiscogsTracklist } from './discogs';
 
 // MAIN FUNCTION
 export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
   console.log(`Starting album art search for: Artist = "${artist}", Title = "${title}"`);
-  
+
   const fallbackSources = [fetchFromDiscogs, fetchFromItunes, fetchFromMusicbrainz];
 
   for (const fetchSource of fallbackSources) {
     try {
       const url = await fetchSource(artist, title, albumId);
-      if (url && url !== 'no') {
+      if (url) {
         console.log(`Found album art URL from source: ${fetchSource.name} ➔ ${url}`);
         return url; // Return the real URL
       } else {
@@ -24,19 +27,19 @@ export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
   }
 
   console.log(`No album art found for: "${artist}" - "${title}" from any source.`);
-  return null; // Explicitly return null if no image found
+  return null;
 }
 
-
-
-// --- FETCHERS ---
-
+// DISCOS Fallback using Proxy
 async function fetchFromDiscogs(artist, title, albumId) {
   try {
-    const results = await searchDiscogsRelease(artist, title);
+    const query = encodeURIComponent(`${artist} ${title}`);
+    const discogsApiUrl = `https://api.discogs.com/database/search?q=${query}&type=release&per_page=1`;
+    const response = await proxyFetch(discogsApiUrl);
+    const data = await response.json();
 
-    if (results && results.length > 0) {
-      const first = results[0];
+    if (data.results && data.results.length > 0) {
+      const first = data.results[0];
 
       if (albumId) {
         const updates = {};
@@ -63,100 +66,36 @@ async function fetchFromDiscogs(artist, title, albumId) {
       }
     }
   } catch (err) {
-    console.error('Discogs fetch error:', err);
+    console.error('Discogs proxy fetch error:', err);
   }
   return null;
 }
 
-
-async function fetchFromItunes(artist, title, albumId) {
+// ITUNES fallback
+async function fetchFromItunes(artist, title) {
   try {
-    const proxyUrl = `/api/proxyFetch?url=${encodeURIComponent(`https://itunes.apple.com/search?term=${artist} ${title}&entity=album&limit=1`)}`;
-    let url = null;
-    try {
-      const response = await fetch(proxyUrl);
-
-      if (!response.ok) {
-        console.error('iTunes proxy fetch failed:', response.status, response.statusText);
-        return null;
-      }
-
-      const data = await response.json();
-      console.log('iTunes proxy fetch successful:', data);
-
-      url = data.results && data.results[0] ? data.results[0].artworkUrl100.replace('100x100bb', '600x600bb') : null;
-    } catch (err) {
-      console.error('iTunes proxy fetch error:', err);
-      return null;
-    }
-
-    if (url && albumId) {
-      await supabase
-        .from('collection')
-        .update({ image_url: url })
-        .eq('id', albumId);
-    }
-    return url;
-  } catch (err) {
-    console.error('iTunes fetch error:', err);
-  }
-  return null;
-}
-
-async function fetchFromMusicbrainz(artist, title, albumId) {
-  try {
-    const proxyUrl = `/api/proxyFetch?url=${encodeURIComponent(`https://musicbrainz.org/ws/2/release/?query=${artist} ${title}&fmt=json&limit=1`)}`;
-    let mbid = null;
-    try {
-      const response = await fetch(proxyUrl);
-
-      if (!response.ok) {
-        console.error('Musicbrainz proxy fetch failed:', response.status, response.statusText);
-        return null;
-      }
-
-      const data = await response.json();
-      console.log('Musicbrainz proxy fetch successful:', data);
-
-      mbid = data.releases && data.releases[0] ? data.releases[0].id : null;
-    } catch (err) {
-      console.error('Musicbrainz proxy fetch error:', err);
-      return null;
-    }
-
-    if (mbid) {
-      const url = await fetchCoverArtFromMBID(mbid);
-      if (url && albumId) {
-        await supabase
-          .from('collection')
-          .update({ image_url: url })
-          .eq('id', albumId);
-      }
+    const url = await fetchAlbumArtFromiTunes(artist, title);
+    if (url) {
       return url;
     }
-  } catch (err) {
-    console.error('MusicBrainz fetch error:', err);
+  } catch (error) {
+    console.error('iTunes fetch error:', error);
   }
   return null;
 }
 
-// --- HELPERS ---
-
-function formatDiscogsTracklist(tracklist) {
-  const sides = {};
-
-  for (const track of tracklist) {
-    if (!track.position) continue;
-
-    const match = track.position.match(/^([A-F])(\d+)$/i);
-    if (match) {
-      const side = match[1].toUpperCase();
-      if (!sides[side]) {
-        sides[side] = [];
+// MUSICBRAINZ fallback
+async function fetchFromMusicbrainz(artist, title) {
+  try {
+    const mbid = await fetchAlbumFromMusicBrainz(artist, title);
+    if (mbid) {
+      const url = await fetchCoverArtFromMBID(mbid);
+      if (url) {
+        return url;
       }
-      sides[side].push(track.title);
     }
+  } catch (error) {
+    console.error('MusicBrainz fetch error:', error);
   }
-
-  return sides;
+  return null;
 }
