@@ -33,25 +33,7 @@ export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
 
 async function fetchFromDiscogs(artist, title, albumId) {
   try {
-    const proxyUrl = `/api/proxyFetch?url=${encodeURIComponent(`https://api.discogs.com/database/search?q=${artist} ${title}&token=KVVAFUlIzOPCUFNhtVXZJenwBHhGmFrmkwYgzQXD`)}`;
-    let results = [];
-      try {
-        const response = await fetch(proxyUrl);
-
-        if (!response.ok) {
-          console.error('Proxy fetch failed:', response.status, response.statusText);
-          return null;
-        }
-
-        const data = await response.json();
-        console.log('Proxy fetch successful:', data);
-
-        results = data.results || [];
-      } catch (error) {
-        console.error('Proxy fetch error:', error);
-        return null;
-      }
-
+    const results = await searchDiscogsRelease(artist, title);
 
     if (results && results.length > 0) {
       const first = results[0];
@@ -75,13 +57,17 @@ async function fetchFromDiscogs(artist, title, albumId) {
         }
       }
 
-      return first.cover_image || null;
+      if (first.cover_image) {
+        console.log(`Found Discogs cover image: ${first.cover_image}`);
+        return first.cover_image;
+      }
     }
   } catch (err) {
     console.error('Discogs fetch error:', err);
   }
   return null;
 }
+
 
 async function fetchFromItunes(artist, title, albumId) {
   try {
