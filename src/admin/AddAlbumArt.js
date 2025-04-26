@@ -15,7 +15,10 @@ const AddAlbumArt = () => {
     if (error) {
       console.error('Error fetching albums:', error);
     } else {
-      setAlbums(data);
+      const sortedData = [...data].sort((a, b) =>
+        (a.artist || '').localeCompare(b.artist || '')
+      );
+      setAlbums(sortedData);      
     }
   }
 
