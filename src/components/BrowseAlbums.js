@@ -41,7 +41,8 @@ const BrowseAlbums = ({
       const albumsWithImages = await Promise.all(
         data.map(async (album) => {
           let updatedAlbum = { ...album };
-    
+          console.log('Processing album:', album.artist, album.title);
+
           if (!album.image_url) {
             console.log('Fetching cover for:', album.artist, album.title);
             const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title);
