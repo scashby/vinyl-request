@@ -24,6 +24,7 @@ const BrowseAlbums = ({
   useEffect(() => {
 
     const fetchAlbums = async () => {
+      console.log('fetchAlbums function is running');
       const { data, error } = await supabase
         .from('collection')
         .select('*')
