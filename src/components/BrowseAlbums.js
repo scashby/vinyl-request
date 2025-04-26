@@ -3,7 +3,6 @@ import { supabase } from '../supabaseClient';
 import 'css/BrowseAlbums.css';
 import FilterBar from './FilterBar';
 import axios from 'axios';
-console.log('Fetching cover for:', album.artist, album.title);
 import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
 
 
@@ -40,6 +39,7 @@ const BrowseAlbums = ({
           let updatedAlbum = { ...album };
     
           if (!album.image_url) {
+            console.log('Fetching cover for:', album.artist, album.title);
             const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title);
             const imageStatus = fetchedImageUrl ? 'yes' : 'no';
             updatedAlbum.image_url = imageStatus;

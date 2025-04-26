@@ -1,4 +1,3 @@
-console.log('fetchAlbumCoverWithFallbacks called for:', artist, title);
 import { searchDiscogsRelease } from './discogs';
 import { fetchAlbumArtFromiTunes } from './itunes';
 import { fetchAlbumFromMusicBrainz, fetchCoverArtFromMBID } from './musicbrainz';
@@ -6,6 +5,7 @@ import { supabase } from '../supabaseClient';
 
 // MAIN FUNCTION
 export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
+  console.log('fetchAlbumCoverWithFallbacks called for:', artist, title);
   const fallbackSources = [fetchFromDiscogs, fetchFromItunes, fetchFromMusicbrainz];
 
   for (const fetchSource of fallbackSources) {
