@@ -43,14 +43,15 @@ const BrowseAlbums = ({
             const imageStatus = fetchedImageUrl ? 'yes' : 'no';
             updatedAlbum.image_url = imageStatus;
             const { data: updateData, error: updateError } = await supabase
-              .from('collection')
-              .update({ image_url: imageStatus })
-              .eq('id', album.id);
+            .from('collection')
+            .update({ image_url: imageStatus })
+            .eq('artist', album.artist)
+            .eq('title', album.title);
 
-            console.log(`Trying to update album:`, {
+
+            console.log(`Trying to update album by artist/title:`, {
               artist: album.artist,
               title: album.title,
-              id: album.id,
               imageStatus: imageStatus
             });
 
