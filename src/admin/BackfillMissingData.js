@@ -13,6 +13,7 @@ const BackfillMissingData = () => {
   const findMissingData = async () => {
     setLoading(true);
     setMessage('Searching for missing data...');
+    console.log('Starting search for missing records...');
 
     const { data, error } = await supabase
       .from('collection')
@@ -26,6 +27,7 @@ const BackfillMissingData = () => {
       return;
     }
 
+    console.log('Missing records found:', data.length);
     setMissingRecords(data);
     setMessage(`Found ${data.length} record(s) with missing data.`);
     setLoading(false);
@@ -34,9 +36,11 @@ const BackfillMissingData = () => {
   const fetchFromDiscogs = async (artist, title) => {
     try {
       const query = `${artist} ${title}`;
+      console.log(`Fetching from Discogs: ${query}`);
       const response = await fetch(`https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&token=${DISCOGS_TOKEN}`);
       const data = await response.json();
       if (data.results && data.results.length > 0) {
+        console.log('Discogs result:', data.results[0]);
         return {
           image_url: data.results[0].cover_image || null,
           title: data.results[0].title || null,
@@ -51,9 +55,11 @@ const BackfillMissingData = () => {
   const fetchFromiTunes = async (artist, title) => {
     try {
       const query = `${artist} ${title}`;
+      console.log(`Fetching from iTunes: ${query}`);
       const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=album&limit=1`);
       const data = await response.json();
       if (data.results && data.results.length > 0) {
+        console.log('iTunes result:', data.results[0]);
         return {
           image_url: data.results[0].artworkUrl100.replace('100x100bb', '600x600bb') || null,
           title: data.results[0].collectionName || null,
@@ -68,9 +74,11 @@ const BackfillMissingData = () => {
   const fetchFromMusicBrainz = async (artist, title) => {
     try {
       const query = `${artist} ${title}`;
+      console.log(`Fetching from MusicBrainz: ${query}`);
       const response = await fetch(`https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(query)}&fmt=json&limit=1`);
       const data = await response.json();
       if (data.releases && data.releases.length > 0) {
+        console.log('MusicBrainz result:', data.releases[0]);
         return {
           image_url: null,
           title: data.releases[0].title || null,
@@ -85,27 +93,39 @@ const BackfillMissingData = () => {
   const backfillData = async () => {
     setLoading(true);
     setMessage('Starting real backfill...');
+    console.log('Starting backfill process...');
 
     for (const record of missingRecords) {
       const { id, artist, title } = record;
+      console.log(`Processing record ID ${id}: ${artist} - ${title}`);
 
       let fetchedData = await fetchFromDiscogs(artist, title);
       if (!fetchedData) fetchedData = await fetchFromiTunes(artist, title);
       if (!fetchedData) fetchedData = await fetchFromMusicBrainz(artist, title);
 
       if (fetchedData) {
-        await supabase
+        console.log(`Fetched data for ID ${id}:`, fetchedData);
+        const { error: updateError } = await supabase
           .from('collection')
           .update({
             image_url: fetchedData.image_url || record.image_url,
             tracklists: fetchedData.title || record.tracklists,
           })
           .eq('id', id);
+
+        if (updateError) {
+          console.error(`Error updating record ID ${id}:`, updateError);
+        } else {
+          console.log(`Successfully updated record ID ${id}`);
+        }
+      } else {
+        console.warn(`No data found for ID ${id}, skipping.`);
       }
     }
 
     setMessage('Real backfill complete! Please review in admin panel.');
     setLoading(false);
+    console.log('Backfill process complete.');
   };
 
   return (
