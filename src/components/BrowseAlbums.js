@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import 'css/BrowseAlbums.css';
 import FilterBar from './FilterBar';
 import axios from 'axios';
+console.log('Fetching cover for:', album.artist, album.title);
 import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
 
 
