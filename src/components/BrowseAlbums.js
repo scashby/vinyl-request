@@ -161,7 +161,9 @@ const BrowseAlbums = ({
             </div>
 
             </div>
-
+            <div style={{ marginTop: '8px', textAlign: 'center', fontSize: '0.9rem' }}>
+              {album.artist} – {album.title}
+            </div>
 
             {expandedId === album.id && (
                 <div className="request-form">
