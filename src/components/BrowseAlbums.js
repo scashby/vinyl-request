@@ -47,9 +47,9 @@ const BrowseAlbums = ({
             console.log('Fetching cover for:', album.artist, album.title);
             const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
             
-            const imageStatus = fetchedImageUrl ? fetchedImageUrl : 'no';
+            const imageStatus = fetchedImageUrl && fetchedImageUrl !== 'no' ? 'yes' : 'no';
             
-            console.log(`Fetched image URL: ${imageStatus}`);
+            console.log(`Fetched image status: ${imageStatus}`);
           
             const { error: updateError } = await supabase
               .from('collection')
@@ -62,6 +62,7 @@ const BrowseAlbums = ({
               console.log(`Successfully updated Supabase: ${album.artist} - ${album.title} ➔ ${imageStatus}`);
             }
           }
+          
           
           
           
