@@ -14,24 +14,25 @@ const BackfillMissingData = () => {
     setLoading(true);
     setMessage('Searching for missing data...');
     console.log('Starting search for missing records...');
-
+  
     const { data, error } = await supabase
       .from('collection')
       .select('*')
-      .or('image_url.is.null,sides.is.null,tracklists.is.null');
-
+      .or('image_url.is.null,image_url.eq.,sides.is.null,tracklists.is.null,tracklists.eq.');
+  
     if (error) {
       console.error('Error fetching missing records:', error);
       setMessage('Error fetching missing records. Check console.');
       setLoading(false);
       return;
     }
-
+  
     console.log('Missing records found:', data.length);
     setMissingRecords(data);
     setMessage(`Found ${data.length} record(s) with missing data.`);
     setLoading(false);
   };
+  
 
   const fetchFromDiscogs = async (artist, title) => {
     try {
