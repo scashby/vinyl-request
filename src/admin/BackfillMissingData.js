@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 
-const DISCOGS_TOKEN = 'YQeWNjcwlYvZFeYWxIkeOXDgnqqvQLYILhwrhpvo';
+const DISCOGS_TOKEN = 'KVVAFUlIzOPCUFNhtVXZJenwBHhGmFrmkwYgzQXD';
 
 const BackfillMissingData = () => {
   const [missingRecords, setMissingRecords] = useState([]);
@@ -41,6 +41,10 @@ const BackfillMissingData = () => {
       const query = `${artist} ${title}`;
       console.log(`Fetching from Discogs: ${query}`);
       const response = await fetch(`https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&token=${DISCOGS_TOKEN}`);
+      if (response.status === 401) {
+        console.error('Discogs Unauthorized. Token may be invalid.');
+        return null;
+      }
       const data = await response.json();
       if (data.results && data.results.length > 0) {
         console.log('Discogs result:', data.results[0]);
@@ -54,12 +58,17 @@ const BackfillMissingData = () => {
     }
     return null;
   };
+  
 
   const fetchFromiTunes = async (artist, title) => {
     try {
       const query = `${artist} ${title}`;
       console.log(`Fetching from iTunes: ${query}`);
       const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=album&limit=1`);
+      if (!response.ok) {
+        console.error(`iTunes fetch failed with status ${response.status}`);
+        return null;
+      }
       const data = await response.json();
       if (data.results && data.results.length > 0) {
         console.log('iTunes result:', data.results[0]);
@@ -73,6 +82,7 @@ const BackfillMissingData = () => {
     }
     return null;
   };
+  
 
   const fetchFromMusicBrainz = async (artist, title) => {
     try {
