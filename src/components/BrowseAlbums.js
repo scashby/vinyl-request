@@ -62,17 +62,12 @@ const BrowseAlbums = ({
 
 
 
-            console.log(`Trying to update album by artist/title:`, {
-              artist: album.artist,
-              title: album.title,
-              imageStatus: fetchedImageUrl
-            });
-
             if (updateError) {
-              console.error('Failed to update image_url status in Supabase for', album.artist, album.title, updateError);
-            } else {
-              console.log(`Update result from Supabase:`, updateData);
-            }
+              console.error('Failed to update image_url in Supabase for', album.artist, album.title, updateError);
+              } else {
+              console.log('Successfully updated image_url for:', album.artist, album.title);
+              }
+              
 
           }
           
