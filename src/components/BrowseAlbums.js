@@ -38,8 +38,9 @@ const BrowseAlbums = ({
         data.map(async (album) => {
           if (album.image_url) return album;
       
-          const fetchedImageUrl = await fetchAlbumImage(album.artist, album.title);
+          const fetchedImageUrl = await fetchAlbumCoverWithFallbacks(album.artist, album.title);
           if (fetchedImageUrl) {
+
             try {
               await supabase
                 .from('collection')
