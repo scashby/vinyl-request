@@ -24,7 +24,8 @@ export async function fetchAlbumCoverWithFallbacks(artist, title, albumId) {
   }
 
   console.log(`No album art found for: "${artist}" - "${title}" from any source.`);
-  return null;
+return 'no';
+
 }
 
 
