@@ -21,3 +21,14 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# Ignore environment variables
+.env
+
+# Node modules
+node_modules/
+
+# Vite build output
+dist/
+
+# VS Code settings
+.vscode/
