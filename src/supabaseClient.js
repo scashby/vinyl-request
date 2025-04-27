@@ -1,7 +1,7 @@
-// src/supabaseClient.js
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://bntoivaipesuovselglg.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJudG9pdmFpcGVzdW92c2VsZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzNTk4ODAsImV4cCI6MjA2MDkzNTg4MH0.uDeEUal876k9isQio0svNEQe1EFC0Q_yKZDy8-vLslM';
+// Now pulling from environment variables
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
