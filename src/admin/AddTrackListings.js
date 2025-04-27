@@ -4,7 +4,9 @@ import { supabase } from '../supabaseClient';
 const AddTrackListings = () => {
   // ===== State Section =====
   const [albums, setAlbums] = useState([]);
-  const [subAlbumsMap, setSubAlbumsMap] = useState({});
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [rawTracklist, setRawTracklist] = useState('');
+  const [parsedSides, setParsedSides] = useState(null);
 
   // ===== Fetch Albums on Load =====
   useEffect(() => {
@@ -16,137 +18,120 @@ const AddTrackListings = () => {
     if (error) {
       console.error('Error fetching albums:', error);
     } else {
-      const parents = data.filter(album => !album.parent_id);
-      const subs = data.filter(album => album.parent_id);
-      const subMap = {};
-      for (const sub of subs) {
-        if (!subMap[sub.parent_id]) subMap[sub.parent_id] = [];
-        subMap[sub.parent_id].push(sub);
-      }
-      setAlbums(parents);
-      setSubAlbumsMap(subMap);
+      setAlbums(data);
     }
   }
 
-  // ===== Input Handlers =====
-  function handleInputChange(id, field, value, isSub = false, parentId = null) {
-    if (isSub && parentId) {
-      setSubAlbumsMap(prev => {
-        const updated = { ...prev };
-        updated[parentId] = updated[parentId].map(album =>
-          album.id === id ? { ...album, [field]: value } : album
-        );
-        return updated;
-      });
-    } else {
-      setAlbums(prev =>
-        prev.map(album =>
-          album.id === id ? { ...album, [field]: value } : album
-        )
-      );
-    }
-  }
+  // ===== Discogs Tracklist Parser =====
+  function parseDiscogsTracklist(rawText) {
+    const lines = rawText.split('\n');
+    const sides = {};
+    let currentSide = null;
 
-  async function handleSave(album) {
-    const updates = {
-      artist: album.artist,
-      title: album.title,
-      sides: album.sides,
-    };
-    const { error } = await supabase.from('collection').update(updates).eq('id', album.id);
-    if (error) {
-      console.error('Error updating album:', error);
-    } else {
-      console.log('Album updated successfully');
-    }
-  }
+    for (let line of lines) {
+      line = line.trim();
+      if (line === '') continue;
 
-  async function handleSaveAll() {
-    for (const album of albums) {
-      await handleSave(album);
-      if (subAlbumsMap[album.id]) {
-        for (const sub of subAlbumsMap[album.id]) {
-          await handleSave(sub);
-        }
+      const match = line.match(/^([A-F])\d+\s+(.+)/);
+
+      if (match) {
+        const sideLetter = match[1];
+        const trackTitle = match[2]
+          .replace(/\s*Written[- ]By.*$/i, '')
+          .replace(/\s*\d+:\d+$/, '')
+          .trim();
+
+        if (!sides[sideLetter]) sides[sideLetter] = [];
+        sides[sideLetter].push(trackTitle);
+
+        currentSide = sideLetter;
+      } else if (currentSide) {
+        continue;
       }
     }
-    console.log('All albums and sub-albums saved.');
+
+    return sides;
   }
 
-  async function handleSaveNewSubAlbum(parentId) {
-    const { data, error } = await supabase
+  // ===== Handlers =====
+  function handleParseTracklist() {
+    const parsed = parseDiscogsTracklist(rawTracklist);
+    setParsedSides(parsed);
+  }
+
+  async function handleSaveTracklist() {
+    if (!selectedAlbum || !parsedSides) return;
+    const { error } = await supabase
       .from('collection')
-      .insert([{ artist: '', title: '', sides: null, parent_id: parentId }])
-      .select();
+      .update({ sides: parsedSides })
+      .eq('id', selectedAlbum.id);
     if (error) {
-      console.error('Error adding sub-album:', error);
+      console.error('Error saving tracklist:', error);
     } else {
-      setSubAlbumsMap(prev => {
-        const updated = { ...prev };
-        updated[parentId] = [...(updated[parentId] || []), data[0]];
-        return updated;
-      });
+      console.log('Tracklist saved successfully!');
     }
   }
 
-  // ===== Render Album and Sub-Album Forms =====
+  // ===== Render =====
   return (
     <div style={{ padding: '20px' }}>
       <h2>Add or Edit Track Listings</h2>
 
-      <button onClick={handleSaveAll} style={{ marginBottom: '20px' }}>Save All</button>
-
-      {albums.map(album => (
-        <div key={album.id} style={{ marginBottom: '40px', borderBottom: '2px solid #ccc', paddingBottom: '20px' }}>
-          <h3>{album.artist} – {album.title}</h3>
-
-          <textarea
-            placeholder="Enter tracklist here (Side A/B, etc.)"
-            value={album.sides || ''}
-            onChange={(e) => handleInputChange(album.id, 'sides', e.target.value)}
-            style={{ width: '100%', height: '150px', marginBottom: '10px' }}
-          />
-
-          <button onClick={() => handleSave(album)}>Save Album</button>
-
-          {/* Sub-Albums Section */}
-          {subAlbumsMap[album.id] && (
-            <div style={{ marginTop: '20px', paddingLeft: '20px', borderLeft: '3px solid #888' }}>
-              <h4>Sub-Albums</h4>
-              {subAlbumsMap[album.id].map(sub => (
-                <div key={sub.id} style={{ marginBottom: '20px' }}>
-                  <strong>Sub-Album Artist:</strong>
-                  <input
-                    value={sub.artist || ''}
-                    onChange={(e) => handleInputChange(sub.id, 'artist', e.target.value, true, album.id)}
-                    style={{ width: '100%', marginBottom: '5px' }}
-                  />
-                  <strong>Sub-Album Title:</strong>
-                  <input
-                    value={sub.title || ''}
-                    onChange={(e) => handleInputChange(sub.id, 'title', e.target.value, true, album.id)}
-                    style={{ width: '100%', marginBottom: '5px' }}
-                  />
-                  <textarea
-                    placeholder="Enter tracklist here (Side A/B, etc.)"
-                    value={sub.sides || ''}
-                    onChange={(e) => handleInputChange(sub.id, 'sides', e.target.value, true, album.id)}
-                    style={{ width: '100%', height: '120px' }}
-                  />
-                  <button onClick={() => handleSave(sub)} style={{ marginTop: '5px' }}>Save Sub-Album</button>
-                </div>
-              ))}
-
-              <button onClick={() => handleSaveNewSubAlbum(album.id)} style={{ marginTop: '10px' }}>➕ Add New Sub-Album</button>
-            </div>
-          )}
-
-        </div>
-      ))}
-
-      <div style={{ marginTop: '30px' }}>
-        <button onClick={handleSaveAll}>Save All</button>
+      {/* Album Selector */}
+      <div>
+        <h4>Select Album:</h4>
+        <select
+          onChange={(e) => {
+            const album = albums.find((a) => a.id === parseInt(e.target.value));
+            setSelectedAlbum(album);
+          }}
+          value={selectedAlbum?.id || ''}
+        >
+          <option value="">-- Select an Album --</option>
+          {albums.map((album) => (
+            <option key={album.id} value={album.id}>
+              {album.artist} – {album.title}
+            </option>
+          ))}
+        </select>
       </div>
+
+      {/* Raw Tracklist Paste */}
+      {selectedAlbum && (
+        <div style={{ marginTop: '20px' }}>
+          <h4>Paste Discogs Tracklist:</h4>
+          <textarea
+            rows="10"
+            style={{ width: '100%' }}
+            value={rawTracklist}
+            onChange={(e) => setRawTracklist(e.target.value)}
+            placeholder="Paste raw tracklist here..."
+          />
+          <button onClick={handleParseTracklist} style={{ marginTop: '10px' }}>
+            Parse Tracklist
+          </button>
+        </div>
+      )}
+
+      {/* Parsed Preview */}
+      {parsedSides && (
+        <div style={{ marginTop: '30px' }}>
+          <h4>Parsed Tracklist Preview:</h4>
+          {Object.entries(parsedSides).map(([side, tracks]) => (
+            <div key={side} style={{ marginBottom: '10px' }}>
+              <strong>Side {side}:</strong>
+              <ul>
+                {tracks.map((track, idx) => (
+                  <li key={idx}>{track}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <button onClick={handleSaveTracklist} style={{ marginTop: '20px' }}>
+            Save Tracklist to Album
+          </button>
+        </div>
+      )}
     </div>
   );
 };
