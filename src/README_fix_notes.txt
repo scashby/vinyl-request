@@ -15,3 +15,4 @@
 📁 TO INSTALL:
 Unzip into your /src folder, replacing existing files.
 changing test
+redeploy
