@@ -31,4 +31,35 @@ export async function fetchAlbumArtFromiTunes(artist, album) {
       return null;
     }
   }
-  
+ // Fetch Tracks From iTunes (dummy fallback version)
+export async function fetchTracksFromiTunes(artist, title) {
+  try {
+    const searchTerm = encodeURIComponent(`${artist} ${title}`);
+    const response = await fetch(`https://itunes.apple.com/search?term=${searchTerm}&entity=song&limit=50`);
+    const data = await response.json();
+
+    if (!data.results || data.results.length === 0) {
+      console.warn(`No tracks found from iTunes for ${artist} - ${title}`);
+      return null;
+    }
+
+    // iTunes does not organize by side, so we just return a flat array
+    const tracks = data.results.map(track => track.trackName);
+
+    if (tracks.length === 0) return null;
+
+    // Group into pseudo-sides: A, B, C if >20 songs
+    const sides = {};
+    const chunkSize = 8; // Just to avoid huge sides
+    for (let i = 0; i < tracks.length; i += chunkSize) {
+      const sideLetter = String.fromCharCode(65 + (i / chunkSize)); // A, B, C...
+      sides[sideLetter] = tracks.slice(i, i + chunkSize);
+    }
+
+    return sides;
+  } catch (error) {
+    console.error('Error fetching tracks from iTunes:', error);
+    return null;
+  }
+}
+ 
