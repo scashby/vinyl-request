@@ -1,0 +1,15 @@
+
+{
+  "name": "Vinyl Request App Codespace",
+  "features": {},
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "eamodio.gitlens",
+    "supabase.supabase"
+  ],
+  "postCreateCommand": "./.devcontainer/postCreateCommand.sh"
+}
