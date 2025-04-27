@@ -51,4 +51,37 @@ export async function fetchAlbumFromMusicBrainz(artist, album) {
       return null;
     }
   }
-  
+ // Fetch Tracks from MusicBrainz (basic fallback version)
+export async function fetchTracksFromMusicBrainz(artist, title) {
+  try {
+    const searchQuery = `${artist} ${title}`;
+    const response = await fetch(`https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(searchQuery)}&fmt=json&limit=1`);
+    const data = await response.json();
+
+    if (!data.releases || data.releases.length === 0) {
+      console.warn(`No releases found on MusicBrainz for ${artist} - ${title}`);
+      return null;
+    }
+
+    const releaseId = data.releases[0].id;
+    const tracksResponse = await fetch(`https://musicbrainz.org/ws/2/release/${releaseId}?inc=recordings&fmt=json`);
+    const tracksData = await tracksResponse.json();
+
+    if (!tracksData.media || tracksData.media.length === 0) {
+      console.warn(`No media tracks found on MusicBrainz for release ${releaseId}`);
+      return null;
+    }
+
+    const sides = {};
+    tracksData.media.forEach((medium, index) => {
+      const sideLetter = String.fromCharCode(65 + index); // A, B, C...
+      sides[sideLetter] = (medium.tracks || []).map(track => track.title);
+    });
+
+    return sides;
+  } catch (error) {
+    console.error('Error fetching tracks from MusicBrainz:', error);
+    return null;
+  }
+}
+ 
