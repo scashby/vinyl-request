@@ -66,8 +66,4 @@ export async function fetchTracksFromiTunes(artist, title) {
 
 // (Already working album art fetching here — LEAVE INTACT)
 
-// Dummy fetchTracksFromiTunes
-export async function fetchTracksFromiTunes(artist, title) {
-  console.log(`Dummy fetchTracksFromiTunes called for ${artist} - ${title}`);
-  return null;
-}
+

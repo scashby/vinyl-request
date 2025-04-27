@@ -88,8 +88,3 @@ export async function fetchTracksFromMusicBrainz(artist, title) {
 
 // (Already working album art fetching here — LEAVE INTACT)
 
-// Dummy fetchTracksFromMusicBrainz
-export async function fetchTracksFromMusicBrainz(artist, title) {
-  console.log(`Dummy fetchTracksFromMusicBrainz called for ${artist} - ${title}`);
-  return null;
-}
