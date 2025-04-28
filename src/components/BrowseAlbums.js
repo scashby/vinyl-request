@@ -1,9 +1,11 @@
+// ✅ Import necessary libraries and components
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import '../css/BrowseAlbums.css';
+import '../css/BrowseAlbums.css'; // ✅ Corrected relative CSS import
 import FilterBar from './FilterBar';
 import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
 
+// ✅ Main BrowseAlbums Component
 const BrowseAlbums = ({
   activeEventId,
   handleSubmit,
@@ -14,11 +16,13 @@ const BrowseAlbums = ({
   name,
   setName,
 }) => {
+  // ✅ Local component states
   const [albums, setAlbums] = useState([]);
   const [filteredAlbums, setFilteredAlbums] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [mediaType, setMediaType] = useState('All');
 
+  // ✅ Fetch albums from Supabase on initial mount
   useEffect(() => {
     const fetchAlbums = async () => {
       console.log('fetchAlbums function is running');
@@ -44,8 +48,7 @@ const BrowseAlbums = ({
             const imageStatus = imageUrl ? imageUrl : 'no';
             if (sides) {
               updatedAlbum.sides = sides;
-}
-
+            }
 
             const { error: updateError } = await supabase
               .from('collection')
@@ -72,6 +75,7 @@ const BrowseAlbums = ({
     fetchAlbums();
   }, []);
 
+  // ✅ Filter albums when search term or media type changes
   useEffect(() => {
     let filtered = albums;
 
@@ -91,13 +95,16 @@ const BrowseAlbums = ({
     setFilteredAlbums(filtered);
   }, [searchTerm, mediaType, albums]);
 
+  // ✅ Handle clicking on an album to expand/collapse
   const handleAlbumClick = (albumId) => {
     setExpandedId(albumId === expandedId ? null : albumId);
     setSide('A');
   };
 
+  // ✅ Main render output
   return (
     <div className="browse-albums">
+      {/* ✅ Search bar and filter controls */}
       <div className="search-filters">
         <input
           type="text"
@@ -109,6 +116,7 @@ const BrowseAlbums = ({
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
 
+      {/* 🛠 Added: Restored album-grid and album-card rendering based on working backup */}
       <div className="album-grid">
         {filteredAlbums.map((album) => (
           <div
@@ -133,34 +141,39 @@ const BrowseAlbums = ({
                     if (fallback) fallback.style.display = 'flex';
                   }}
                 />
-              ) : null}
-              <div
-                className="album-placeholder"
-                style={{
-                  display: !album.image_url ? 'flex' : 'none',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'black',
-                  color: 'white',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                  padding: '5px',
-                  fontSize: '0.9em',
-                }}
-              >
-                {album.artist} – {album.title}
-              </div>
+              ) : (
+                <div
+                  className="album-placeholder"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'black',
+                    color: 'white',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    padding: '5px',
+                    fontSize: '0.9em',
+                  }}
+                >
+                  {album.artist} – {album.title}
+                </div>
+              )}
             </div>
 
-            {/* ✅ Added artist - title below album */}
-            <div className="album-info-text" style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}>
+            {/* ✅ Album info text below each album */}
+            <div
+              className="album-info-text"
+              style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}
+            >
               {album.artist} – {album.title}
             </div>
 
+            {/* ✅ Request form (expandable section) */}
             {expandedId === album.id && (
               <div className="request-form">
                 <select value={side} onChange={(e) => setSide(e.target.value)}>
