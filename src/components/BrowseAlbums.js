@@ -1,18 +1,9 @@
 // ✅ Import necessary libraries and components
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import '../css/BrowseAlbums.css'; // ✅ Corrected relative CSS import
+import '../css/BrowseAlbums.css'; // ✅ Correct relative CSS import
 import FilterBar from './FilterBar';
 import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
-
-// 🛠 Temporary direct fetch to test Supabase connection
-supabase
-  .from('collection')
-  .select('*')
-  .then(({ data, error }) => {
-    console.log('Direct collection fetch:', data, error);
-  });
-
 
 // ✅ Main BrowseAlbums Component
 const BrowseAlbums = ({
@@ -51,14 +42,14 @@ const BrowseAlbums = ({
         data.map(async (album) => {
           let updatedAlbum = { ...album };
 
+          // 🛠 Only attempt fallback fetch if image_url is missing or "no"
           if (!album.image_url || album.image_url === 'no') {
-            console.log('Fetching cover for:', album.artist, album.title);
+            console.log('Fetching fallback cover for:', album.artist, album.title);
 
-            // 🛠 Modified fetch: temporarily disabling sides to restore grid rendering
+            // 🛠 Commented out sides temporarily to avoid breaking grid
             const { imageUrl /*, sides */ } = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
             const imageStatus = imageUrl ? imageUrl : 'no';
 
-            // 🛠 Commented out sides assignment temporarily to fix album grid
             /*
             if (sides) {
               updatedAlbum.sides = sides;
@@ -130,17 +121,8 @@ const BrowseAlbums = ({
         />
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
-{/* 🧪 Debugging: Show number of albums fetched */}
-<div style={{ padding: '10px', backgroundColor: '#e0f7fa', border: '1px solid #00acc1', marginBottom: '10px' }}>
-  {albums.length} albums fetched.
-</div>
 
-{/* 🧪 Debugging: Show number of albums filtered */}
-<div style={{ padding: '10px', backgroundColor: '#fffae5', border: '1px solid gold', marginBottom: '10px' }}>
-  {filteredAlbums.length} albums found after filtering.
-</div>
-
-      {/* 🛠 Restored album-grid and album-card rendering */}
+      {/* 🛠 Restored album-grid and album-card rendering with fallback handling */}
       <div className="album-grid">
         {filteredAlbums.map((album) => (
           <div
@@ -149,7 +131,8 @@ const BrowseAlbums = ({
             onClick={() => handleAlbumClick(album.id)}
           >
             <div style={{ position: 'relative', width: '100%', height: '150px' }}>
-              {album.image_url ? (
+              {/* ✅ Image if available */}
+              {album.image_url && album.image_url !== 'no' ? (
                 <img
                   src={album.image_url}
                   alt={`${album.artist} - ${album.title}`}
@@ -159,34 +142,36 @@ const BrowseAlbums = ({
                     objectFit: 'cover',
                   }}
                   onError={(e) => {
+                    console.error('Image load failed for:', album.artist, album.title);
                     e.target.onerror = null;
                     e.target.style.display = 'none';
                     const fallback = e.target.nextElementSibling;
                     if (fallback) fallback.style.display = 'flex';
                   }}
                 />
-              ) : (
-                <div
-                  className="album-placeholder"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'black',
-                    color: 'white',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    padding: '5px',
-                    fontSize: '0.9em',
-                  }}
-                >
-                  {album.artist} – {album.title}
-                </div>
-              )}
+              ) : null}
+
+              {/* ✅ Fallback black box with artist/title if no image */}
+              <div
+                className="album-placeholder"
+                style={{
+                  display: (!album.image_url || album.image_url === 'no') ? 'flex' : 'none',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'black',
+                  color: 'white',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  padding: '5px',
+                  fontSize: '0.9em',
+                }}
+              >
+                {album.artist} – {album.title}
+              </div>
             </div>
 
             {/* ✅ Album info text below each album */}
