@@ -1,5 +1,5 @@
 import React from 'react';
-import 'css/UpNextDisplay.css';
+import '../css/UpNextDisplay.css';
 
 const UpNextDisplay = ({ upNext }) => {
   if (!upNext || upNext.length === 0) return <div className="up-next-display">⏭️ Nothing queued</div>;

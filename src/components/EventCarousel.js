@@ -1,6 +1,6 @@
 // src/components/EventCarousel.js
 import React from 'react';
-import 'css/EventDisplay.css';
+import '../css/EventDisplay.css';
 
 /**
  * Scrollable list of all upcoming events.

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import 'css/BrowseAlbums.css';
+import '../css/BrowseAlbums.css';
 import FilterBar from './FilterBar';
 import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
 

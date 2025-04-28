@@ -3,7 +3,7 @@ import React from 'react';
 import NowPlayingDisplay from './NowPlayingDisplay';
 import UpNextDisplay from './UpNextDisplay';
 import RequestQueue from './RequestQueue';
-import 'css/EventDisplay.css'; // Reuses same styling
+import '../css/EventDisplay.css'; // Reuses same styling
 
 /**
  * Displays the featured event for today, including Now Playing,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import 'css/Header.css';
+import '../css/Header.css';
 import logo from '../assets/devils-purse-logo.png';
 
 const Header = ({ session, setSession, setAdminMode }) => {

@@ -5,7 +5,7 @@ import RequestQueue from './RequestQueue';
 import BrowseAlbums from './BrowseAlbums';
 import NowPlayingDisplay from './NowPlayingDisplay';
 import UpNextDisplay from './UpNextDisplay';
-import 'css/EventDisplay.css';
+import '../css/EventDisplay.css';
 import { useNavigate } from 'react-router-dom';
 
 export default function ExpandedEvent({ event, onBack }) {

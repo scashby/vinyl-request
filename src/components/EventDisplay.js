@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 import TodayEventHighlight from './TodayEventHighlight';
 import EventCarousel from './EventCarousel';
 import ExpandedEvent from './ExpandedEvent'; // ✅ make sure this is created
-import 'css/EventDisplay.css';
+import '../css/EventDisplay.css';
 
 export default function EventDisplay({ events, activeEventId, setActiveEventId }) {
   const [todayEvent, setTodayEvent] = useState(null);

@@ -1,6 +1,6 @@
 // src/components/FilterBar.js
 import React from 'react';
-import 'css/FilterBar.css'; // ✅ Uses alias as intended
+import '../css/FilterBar.css'; // ✅ Uses alias as intended
 
 const FilterBar = ({ mediaType, setMediaType }) => {
   return (

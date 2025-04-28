@@ -1,7 +1,7 @@
 // src/components/CustomerVinylForm.js
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
-import 'css/CustomerVinylForm.css';
+import '../css/CustomerVinylForm.css';
 
 
 const CustomerVinylForm = ({ activeEventId, isAdmin }) => {

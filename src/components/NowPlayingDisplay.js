@@ -1,5 +1,5 @@
 import React from 'react';
-import 'css/NowPlayingDisplay.css';
+import '../css/NowPlayingDisplay.css';
 
 const NowPlayingDisplay = ({ nowPlaying }) => {
   if (!nowPlaying) return <div className="now-playing-display">🎶 Nothing playing right now</div>;

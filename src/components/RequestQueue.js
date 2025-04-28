@@ -1,5 +1,5 @@
 import React from 'react';
-import 'css/RequestQueue.css';
+import '../css/RequestQueue.css';
 
 const RequestQueue = ({
   requests = [],
