@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import 'css/BrowseAlbums.css';
 import FilterBar from './FilterBar';
 import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
-import ExpandedAlbumCard from './ExpandedAlbumCard'; // ✅ New: import expanded view component
+import ExpandedAlbumCard from './ExpandedAlbumCard'; // ✅ Import Expanded Album component
 
 const BrowseAlbums = ({
   activeEventId,
@@ -20,7 +20,7 @@ const BrowseAlbums = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [mediaType, setMediaType] = useState('All');
 
-  // ✅ Fetch albums from Supabase on first load
+  // ✅ Fetch albums from Supabase
   useEffect(() => {
     const fetchAlbums = async () => {
       console.log('fetchAlbums function is running');
@@ -73,7 +73,7 @@ const BrowseAlbums = ({
     fetchAlbums();
   }, []);
 
-  // ✅ Apply search and media type filters when inputs change
+  // ✅ Filter albums when search term or media type changes
   useEffect(() => {
     let filtered = albums;
 
@@ -93,23 +93,24 @@ const BrowseAlbums = ({
     setFilteredAlbums(filtered);
   }, [searchTerm, mediaType, albums]);
 
-  // ✅ Handle album click to expand/collapse
+  // ✅ Handle click to expand/collapse album
   const handleAlbumClick = (albumId) => {
     setExpandedId(albumId === expandedId ? null : albumId);
-    setSide('A'); // Default to Side A when opening
+    setSide('A'); // Reset side to 'A' when opening
   };
 
-  // ✅ New function to handle submission from ExpandedAlbumCard
+  // ✅ Handle submit from inside expanded album view
   const handleExpandedSubmit = (album, selectedSide, userName) => {
     setSide(selectedSide);
     setName(userName);
     handleSubmit(album);
-    setExpandedId(null); // Collapse the expanded view after submitting
+    setExpandedId(null); // Collapse after submit
   };
 
   return (
     <div className="browse-albums">
-      {/* ✅ Search bar and media type filter */}
+
+      {/* ✅ Search and Filter section */}
       <div className="search-filters">
         <input
           type="text"
@@ -121,15 +122,16 @@ const BrowseAlbums = ({
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
 
-      {/* ✅ Album grid display */}
+      {/* ✅ Albums Grid */}
       <div className="album-grid">
         {filteredAlbums.map((album) => (
           <div
             key={album.id}
             className="album-card"
             onClick={() => handleAlbumClick(album.id)}
+            style={{ cursor: 'pointer' }}
           >
-            {/* ✅ Album Cover + fallback placeholder */}
+            {/* ✅ Album Cover and Fallback */}
             <div style={{ position: 'relative', width: '100%', height: '150px' }}>
               {album.image_url ? (
                 <img
@@ -148,6 +150,7 @@ const BrowseAlbums = ({
                   }}
                 />
               ) : null}
+
               <div
                 className="album-placeholder"
                 style={{
@@ -170,7 +173,7 @@ const BrowseAlbums = ({
               </div>
             </div>
 
-            {/* ✅ Artist and album title below cover */}
+            {/* ✅ Artist and Title below cover */}
             <div
               className="album-info-text"
               style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}
@@ -178,7 +181,7 @@ const BrowseAlbums = ({
               {album.artist} – {album.title}
             </div>
 
-            {/* ✅ Expanded view (only if this album is expanded) */}
+            {/* ✅ Only expand the clicked album */}
             {expandedId === album.id && (
               <ExpandedAlbumCard
                 album={album}
