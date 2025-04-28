@@ -6,5 +6,7 @@
       "css/*": ["css/*"],
       "admin/*": ["admin/*"]
     }
-  }
+  },
+  "include": ["src"]
 }
+
