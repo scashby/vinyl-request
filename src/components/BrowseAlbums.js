@@ -44,11 +44,17 @@ const BrowseAlbums = ({
 
           if (!album.image_url || album.image_url === 'no') {
             console.log('Fetching cover for:', album.artist, album.title);
-            const { imageUrl, sides } = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
+
+            // 🛠 Modified fetch: temporarily disabling sides to restore grid rendering
+            const { imageUrl /*, sides */ } = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
             const imageStatus = imageUrl ? imageUrl : 'no';
+
+            // 🛠 Commented out sides assignment temporarily to fix album grid
+            /*
             if (sides) {
               updatedAlbum.sides = sides;
             }
+            */
 
             const { error: updateError } = await supabase
               .from('collection')
@@ -116,17 +122,7 @@ const BrowseAlbums = ({
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
 
-{/* 🧪 Debugging: Show number of albums fetched */}
-<div style={{ padding: '10px', backgroundColor: '#e0f7fa', border: '1px solid #00acc1', marginBottom: '10px' }}>
-  {albums.length} albums fetched.
-</div>
-
-{/* 🧪 Debugging: Show number of albums found */}
-<div style={{ padding: '10px', backgroundColor: '#fffae5', border: '1px solid gold', marginBottom: '10px' }}>
-  {filteredAlbums.length} albums found.
-</div>
-
-      {/* 🛠 Added: Restored album-grid and album-card rendering based on working backup */}
+      {/* 🛠 Restored album-grid and album-card rendering */}
       <div className="album-grid">
         {filteredAlbums.map((album) => (
           <div
