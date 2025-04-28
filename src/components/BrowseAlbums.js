@@ -74,6 +74,9 @@ const BrowseAlbums = ({
         })
       );
 
+      console.log('Albums fetched (after fallback processing):', albumsWithImages);
+
+
       setAlbums(albumsWithImages);
       setFilteredAlbums(albumsWithImages);
     };
