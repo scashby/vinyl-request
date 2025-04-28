@@ -7,6 +7,7 @@ const AddAlbumArt = () => {
   const [albums, setAlbums] = useState([]);
   const [editedAlbums, setEditedAlbums] = useState({});
   const [showMissingArtOnly, setShowMissingArtOnly] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // 🆕 Added search term
 
   // ✅ Fetch albums from Supabase on mount
   useEffect(() => {
@@ -118,9 +119,32 @@ const AddAlbumArt = () => {
     setShowMissingArtOnly(!showMissingArtOnly);
   };
 
+  // ✅ Filter albums based on missing art and search term
+  const filteredAlbums = albums
+    .filter(album => !showMissingArtOnly || !album.image_url || album.image_url === 'no')
+    .filter(album => {
+      if (!searchTerm) return true;
+      const lowerSearch = searchTerm.toLowerCase();
+      return (
+        album.artist?.toLowerCase().includes(lowerSearch) ||
+        album.title?.toLowerCase().includes(lowerSearch)
+      );
+    });
+
   return (
     <div className="admin-page">
       <h2>Replace Album Artwork</h2>
+
+      {/* ✅ Search Field */}
+      <div style={{ marginBottom: '20px' }}>
+        <input
+          type="text"
+          placeholder="Search by Artist or Title"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ width: '300px', padding: '5px' }}
+        />
+      </div>
 
       {/* ✅ Show Missing Artwork Only Toggle */}
       <div style={{ marginBottom: '20px' }}>
@@ -140,11 +164,8 @@ const AddAlbumArt = () => {
       </button>
 
       {/* ✅ Album List */}
-      {albums
-        .filter(album => !showMissingArtOnly || !album.image_url || album.image_url === 'no')
-        .map((album) => {
+      {filteredAlbums.map((album) => {
           const edited = editedAlbums[album.id] || {};
-
           const currentImageUrl = edited.image_url ?? album.image_url;
 
           return (
