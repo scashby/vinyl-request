@@ -8,7 +8,7 @@ const AddAlbumArt = () => {
   const [editedAlbums, setEditedAlbums] = useState({});
   const [showMissingArtOnly, setShowMissingArtOnly] = useState(false);
 
-  // ✅ Fetch albums on mount
+  // ✅ Fetch albums from Supabase on mount
   useEffect(() => {
     const fetchAlbums = async () => {
       const { data, error } = await supabase
@@ -145,18 +145,22 @@ const AddAlbumArt = () => {
         .map((album) => {
           const edited = editedAlbums[album.id] || {};
 
+          const currentImageUrl = edited.image_url ?? album.image_url;
+
           return (
             <div key={album.id} className="album-edit-card" style={{ marginBottom: '20px', borderBottom: '1px solid #ccc', paddingBottom: '20px' }}>
-              {/* ✅ Artwork Preview */}
+              {/* ✅ Artwork Preview or Black Box */}
               <div style={{ marginBottom: '8px' }}>
-                {album.image_url ? (
+                {(currentImageUrl && currentImageUrl !== 'no') ? (
                   <img
-                    src={edited.image_url || album.image_url}
+                    src={currentImageUrl}
                     alt={`${album.artist} - ${album.title}`}
                     style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = '/default-placeholder.png'; // Optional fallback
+                      e.target.style.display = 'none';
+                      const fallback = e.target.nextElementSibling;
+                      if (fallback) fallback.style.display = 'flex';
                     }}
                   />
                 ) : (
@@ -165,15 +169,11 @@ const AddAlbumArt = () => {
                       width: '100px',
                       height: '100px',
                       backgroundColor: 'black',
-                      color: 'white',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.8em',
                     }}
-                  >
-                    No Image
-                  </div>
+                  />
                 )}
               </div>
 
