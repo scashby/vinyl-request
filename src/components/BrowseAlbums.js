@@ -115,6 +115,10 @@ const BrowseAlbums = ({
         />
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
+{/* 🧪 Debugging: Show number of albums found */}
+<div style={{ padding: '10px', backgroundColor: '#fffae5', border: '1px solid gold', marginBottom: '10px' }}>
+  {filteredAlbums.length} albums found.
+</div>
 
       {/* 🛠 Added: Restored album-grid and album-card rendering based on working backup */}
       <div className="album-grid">
