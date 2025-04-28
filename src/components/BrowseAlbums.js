@@ -115,6 +115,12 @@ const BrowseAlbums = ({
         />
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
+
+{/* 🧪 Debugging: Show number of albums fetched */}
+<div style={{ padding: '10px', backgroundColor: '#e0f7fa', border: '1px solid #00acc1', marginBottom: '10px' }}>
+  {albums.length} albums fetched.
+</div>
+
 {/* 🧪 Debugging: Show number of albums found */}
 <div style={{ padding: '10px', backgroundColor: '#fffae5', border: '1px solid gold', marginBottom: '10px' }}>
   {filteredAlbums.length} albums found.
