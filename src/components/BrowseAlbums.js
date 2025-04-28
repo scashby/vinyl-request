@@ -121,6 +121,8 @@ const BrowseAlbums = ({
         />
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
+      {/* Troubleshooting step */}
+      {console.log('filteredAlbums:', filteredAlbums)}
 
       {/* 🛠 Restored album-grid and album-card rendering with fallback handling */}
       <div className="album-grid">
