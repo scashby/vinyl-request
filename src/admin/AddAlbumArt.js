@@ -7,7 +7,7 @@ const AddAlbumArt = () => {
   const [albums, setAlbums] = useState([]);
   const [editedAlbums, setEditedAlbums] = useState({});
   const [showMissingArtOnly, setShowMissingArtOnly] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // 🆕 Added search term
+  const [searchTerm, setSearchTerm] = useState('');
 
   // ✅ Fetch albums from Supabase on mount
   useEffect(() => {
@@ -49,13 +49,23 @@ const AddAlbumArt = () => {
     }));
   };
 
-  // ✅ Save a single album
+  // ✅ Corrected Save a single album
   const handleSaveSingle = async (albumId) => {
-    const fields = editedAlbums[albumId];
-    if (!fields) {
-      alert('No changes to save.');
+    const edited = editedAlbums[albumId];
+    const album = albums.find((a) => a.id === albumId);
+
+    if (!album) {
+      alert('Album not found.');
       return;
     }
+
+    const fields = {
+      artist: edited?.artist ?? album.artist,
+      title: edited?.title ?? album.title,
+      image_url: edited?.image_url ?? album.image_url,
+      is_box_set: edited?.box_set ?? album.is_box_set,
+      // 🛑 parent_id intentionally left untouched
+    };
 
     const { error } = await supabase
       .from('collection')
@@ -234,7 +244,7 @@ const AddAlbumArt = () => {
                   <label><strong>Box Set:</strong></label>{' '}
                   <input
                     type="checkbox"
-                    checked={(edited.box_set ?? album.box_set) || false}
+                    checked={(edited.box_set ?? album.is_box_set) || false}
                     onChange={(e) => handleCheckboxChange(album.id, 'box_set', e.target.checked)}
                   />
                 </div>
