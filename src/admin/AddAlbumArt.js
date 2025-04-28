@@ -213,7 +213,7 @@ const AddAlbumArt = () => {
                   <label><strong>Box Set:</strong></label>{' '}
                   <input
                     type="checkbox"
-                    checked={edited.box_set ?? album.box_set || false}
+                    checked={(edited.box_set ?? album.box_set) || false}
                     onChange={(e) => handleCheckboxChange(album.id, 'box_set', e.target.checked)}
                   />
                 </div>
