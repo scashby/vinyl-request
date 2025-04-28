@@ -1,11 +1,10 @@
-// ✅ Import necessary libraries and components
+// ✅ Imports
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import '../css/BrowseAlbums.css'; // ✅ Correct relative CSS import
+import '../css/BrowseAlbums.css';
 import FilterBar from './FilterBar';
-import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
 
-// ✅ Main BrowseAlbums Component
+// ✅ BrowseAlbums component
 const BrowseAlbums = ({
   activeEventId,
   handleSubmit,
@@ -16,16 +15,16 @@ const BrowseAlbums = ({
   name,
   setName,
 }) => {
-  // ✅ Local component states
   const [albums, setAlbums] = useState([]);
   const [filteredAlbums, setFilteredAlbums] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [mediaType, setMediaType] = useState('All');
 
-  // ✅ Fetch albums from Supabase on initial mount
+  // ✅ Fetch albums on mount
   useEffect(() => {
     const fetchAlbums = async () => {
       console.log('fetchAlbums function is running');
+
       const { data, error } = await supabase
         .from('collection')
         .select('*')
@@ -38,47 +37,8 @@ const BrowseAlbums = ({
         return;
       }
 
-      const albumsWithImages = await Promise.all(
-        data.map(async (album) => {
-          let updatedAlbum = { ...album };
-
-          // 🛠 Only attempt fallback fetch if image_url is missing or "no"
-          if (!album.image_url || album.image_url === 'no') {
-            console.log('Fetching fallback cover for:', album.artist, album.title);
-
-            // 🛠 Commented out sides temporarily to avoid breaking grid
-            const { imageUrl /*, sides */ } = await fetchAlbumCoverWithFallbacks(album.artist, album.title, album.id);
-            const imageStatus = imageUrl ? imageUrl : 'no';
-
-            /*
-            if (sides) {
-              updatedAlbum.sides = sides;
-            }
-            */
-
-            const { error: updateError } = await supabase
-              .from('collection')
-              .update({ image_url: imageStatus })
-              .eq('id', album.id);
-
-            if (updateError) {
-              console.error('Failed to update image_url in Supabase for', album.artist, album.title, updateError);
-            } else {
-              console.log(`Successfully updated Supabase: ${album.artist} - ${album.title} ➔ ${imageStatus}`);
-            }
-
-            updatedAlbum.image_url = imageStatus;
-          }
-
-          return updatedAlbum;
-        })
-      );
-
-      console.log('Albums fetched (after fallback processing):', albumsWithImages);
-
-
-      setAlbums(albumsWithImages);
-      setFilteredAlbums(albumsWithImages);
+      setAlbums(data);
+      setFilteredAlbums(data);
     };
 
     fetchAlbums();
@@ -104,16 +64,15 @@ const BrowseAlbums = ({
     setFilteredAlbums(filtered);
   }, [searchTerm, mediaType, albums]);
 
-  // ✅ Handle clicking on an album to expand/collapse
+  // ✅ Handle album click
   const handleAlbumClick = (albumId) => {
     setExpandedId(albumId === expandedId ? null : albumId);
     setSide('A');
   };
 
-  // ✅ Main render output
+  // ✅ Render component
   return (
     <div className="browse-albums">
-      {/* ✅ Search bar and filter controls */}
       <div className="search-filters">
         <input
           type="text"
@@ -124,10 +83,8 @@ const BrowseAlbums = ({
         />
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
-      {/* Troubleshooting step */}
-      {console.log('filteredAlbums:', filteredAlbums)}
 
-      {/* 🛠 Restored album-grid and album-card rendering with fallback handling */}
+      {/* 🛠 Restored album-grid rendering */}
       <div className="album-grid">
         {filteredAlbums.map((album) => (
           <div
@@ -136,7 +93,6 @@ const BrowseAlbums = ({
             onClick={() => handleAlbumClick(album.id)}
           >
             <div style={{ position: 'relative', width: '100%', height: '150px' }}>
-              {/* ✅ Image if available */}
               {album.image_url && album.image_url !== 'no' ? (
                 <img
                   src={album.image_url}
@@ -156,7 +112,7 @@ const BrowseAlbums = ({
                 />
               ) : null}
 
-              {/* ✅ Fallback black box with artist/title if no image */}
+              {/* ✅ Placeholder black box if no image */}
               <div
                 className="album-placeholder"
                 style={{
@@ -179,7 +135,7 @@ const BrowseAlbums = ({
               </div>
             </div>
 
-            {/* ✅ Album info text below each album */}
+            {/* ✅ Album info under image/placeholder */}
             <div
               className="album-info-text"
               style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}
@@ -187,7 +143,7 @@ const BrowseAlbums = ({
               {album.artist} – {album.title}
             </div>
 
-            {/* ✅ Request form (expandable section) */}
+            {/* ✅ Request form if album is expanded */}
             {expandedId === album.id && (
               <div className="request-form">
                 <select value={side} onChange={(e) => setSide(e.target.value)}>
