@@ -5,6 +5,15 @@ import '../css/BrowseAlbums.css'; // ✅ Corrected relative CSS import
 import FilterBar from './FilterBar';
 import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
 
+// 🛠 Temporary direct fetch to test Supabase connection
+supabase
+  .from('collection')
+  .select('*')
+  .then(({ data, error }) => {
+    console.log('Direct collection fetch:', data, error);
+  });
+
+
 // ✅ Main BrowseAlbums Component
 const BrowseAlbums = ({
   activeEventId,
