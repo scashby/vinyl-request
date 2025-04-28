@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import 'css/BrowseAlbums.css';
 import FilterBar from './FilterBar';
 import { fetchAlbumCoverWithFallbacks } from '../api/fetchAlbumCoverWithFallbacks';
-import ExpandedAlbumCard from './ExpandedAlbumCard'; // ✅ Import Expanded Album component
+import ExpandedAlbumCard from './ExpandedAlbumCard'; // ✅ NEW: Expanded album block
 
 const BrowseAlbums = ({
   activeEventId,
@@ -15,12 +15,13 @@ const BrowseAlbums = ({
   name,
   setName,
 }) => {
+  // ✅ Main local states
   const [albums, setAlbums] = useState([]);
   const [filteredAlbums, setFilteredAlbums] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [mediaType, setMediaType] = useState('All');
 
-  // ✅ Fetch albums from Supabase
+  // ✅ Fetch album collection from Supabase
   useEffect(() => {
     const fetchAlbums = async () => {
       console.log('fetchAlbums function is running');
@@ -73,7 +74,7 @@ const BrowseAlbums = ({
     fetchAlbums();
   }, []);
 
-  // ✅ Filter albums when search term or media type changes
+  // ✅ Apply search and media type filters when inputs change
   useEffect(() => {
     let filtered = albums;
 
@@ -93,24 +94,24 @@ const BrowseAlbums = ({
     setFilteredAlbums(filtered);
   }, [searchTerm, mediaType, albums]);
 
-  // ✅ Handle click to expand/collapse album
+  // ✅ Handle clicking an album to expand/collapse
   const handleAlbumClick = (albumId) => {
-    setExpandedId(albumId === expandedId ? null : albumId);
-    setSide('A'); // Reset side to 'A' when opening
+    setExpandedId(albumId === expandedId ? null : albumId); // Toggle expand
+    setSide('A'); // Default to side A
   };
 
-  // ✅ Handle submit from inside expanded album view
+  // ✅ Handle submitting a request from the expanded album card
   const handleExpandedSubmit = (album, selectedSide, userName) => {
     setSide(selectedSide);
     setName(userName);
     handleSubmit(album);
-    setExpandedId(null); // Collapse after submit
+    setExpandedId(null); // Collapse expanded view after submit
   };
 
   return (
     <div className="browse-albums">
 
-      {/* ✅ Search and Filter section */}
+      {/* ✅ Search bar and media type filter */}
       <div className="search-filters">
         <input
           type="text"
@@ -122,17 +123,19 @@ const BrowseAlbums = ({
         <FilterBar mediaType={mediaType} setMediaType={setMediaType} />
       </div>
 
-      {/* ✅ Albums Grid */}
+      {/* ✅ Album grid */}
       <div className="album-grid">
         {filteredAlbums.map((album) => (
           <div
             key={album.id}
             className="album-card"
-            onClick={() => handleAlbumClick(album.id)}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', padding: '10px' }}
           >
-            {/* ✅ Album Cover and Fallback */}
-            <div style={{ position: 'relative', width: '100%', height: '150px' }}>
+            {/* ✅ Small album cover and text (always visible) */}
+            <div
+              onClick={() => handleAlbumClick(album.id)}
+              style={{ position: 'relative', width: '100%', height: '150px' }}
+            >
               {album.image_url ? (
                 <img
                   src={album.image_url}
@@ -151,6 +154,7 @@ const BrowseAlbums = ({
                 />
               ) : null}
 
+              {/* Fallback for missing album image */}
               <div
                 className="album-placeholder"
                 style={{
@@ -173,15 +177,15 @@ const BrowseAlbums = ({
               </div>
             </div>
 
-            {/* ✅ Artist and Title below cover */}
+            {/* ✅ Artist and album title below cover */}
             <div
               className="album-info-text"
-              style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}
+              style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em', wordWrap: 'break-word' }}
             >
               {album.artist} – {album.title}
             </div>
 
-            {/* ✅ Only expand the clicked album */}
+            {/* ✅ Expanded view appears inline when this album is expanded */}
             {expandedId === album.id && (
               <ExpandedAlbumCard
                 album={album}
