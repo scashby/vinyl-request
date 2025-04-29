@@ -45,6 +45,7 @@ const BrowseAlbums = ({
       }
 
       setAlbums(data);
+      console.log('🧪 Sample fetched albums:', data.slice(0, 5));
       setFilteredAlbums(data);
       setIsLoading(false);
     };
@@ -75,6 +76,9 @@ const BrowseAlbums = ({
   }, [activeEventId]);
 
   // ✅ Filter albums when search term or media type changes
+  console.log('🎛 Filtering albums with mediaType:', mediaType);
+  console.log('📁 All folder values:', albums.map(a => a.folder));
+
   useEffect(() => {
     let filtered = albums;
 
@@ -90,6 +94,7 @@ const BrowseAlbums = ({
     if (mediaType !== 'All') {
       filtered = filtered.filter((album) => album.folder === mediaType);
     }
+    console.log('✅ Resulting filtered albums:', filtered.length);
 
     setFilteredAlbums(filtered);
   }, [searchTerm, mediaType, albums]);
