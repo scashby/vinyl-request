@@ -1,24 +1,21 @@
 // src/components/SideSelector.js
 import React from 'react';
 
-const SideSelector = ({ sides, selectedSide, setSelectedSide }) => {
-  const availableSides = Object.keys(sides);
-
+const SideSelector = ({ sides, selectedSide, onSelectSide }) => {
   return (
     <div className="side-selector">
-      <label htmlFor="side-dropdown">Select a Side:</label>
-      <select
-        id="side-dropdown"
-        value={selectedSide}
-        onChange={(e) => setSelectedSide(e.target.value)}
-      >
-        <option value="">-- Choose a Side --</option>
-        {availableSides.map((side) => (
-          <option key={side} value={side}>
+      <h3>Select Side:</h3>
+      <div className="side-tabs">
+        {sides.map((side) => (
+          <button
+            key={side}
+            className={`side-tab ${selectedSide === side ? 'active' : ''}`}
+            onClick={() => onSelectSide(side)}
+          >
             Side {side}
-          </option>
+          </button>
         ))}
-      </select>
+      </div>
     </div>
   );
 };
