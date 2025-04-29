@@ -76,10 +76,10 @@ const BrowseAlbums = ({
   }, [activeEventId]);
 
   // ✅ Filter albums when search term or media type changes
-  console.log('🎛 Filtering albums with mediaType:', mediaType);
-  console.log('📁 All folder values:', albums.map(a => a.folder));
-
   useEffect(() => {
+    console.log('🎛 Filtering albums with mediaType:', mediaType);
+    console.log('📁 All folder values:', albums.map(a => a.folder));
+
     let filtered = albums;
 
     if (searchTerm) {
@@ -91,13 +91,17 @@ const BrowseAlbums = ({
       );
     }
 
+    // 🛠 Fixed casing mismatch: compare folder and mediaType using toLowerCase
     if (mediaType !== 'All') {
-      filtered = filtered.filter((album) => album.folder === mediaType);
+      filtered = filtered.filter((album) =>
+        album.folder?.toLowerCase() === mediaType.toLowerCase()
+      );
     }
-    console.log('✅ Resulting filtered albums:', filtered.length);
 
+    console.log('✅ Resulting filtered albums:', filtered.length);
     setFilteredAlbums(filtered);
   }, [searchTerm, mediaType, albums]);
+
 
   // ✅ Handle album click
   const handleAlbumClick = (albumId) => {
