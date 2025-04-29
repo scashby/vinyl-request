@@ -6,26 +6,26 @@ const FilterBar = ({ mediaType, setMediaType }) => {
   return (
     <div className="filter-bar">
       <button
-        className={mediaType === 'all' ? 'active' : ''}
-        onClick={() => setMediaType('all')}
+        className={mediaType === 'All' ? 'active' : ''}
+        onClick={() => setMediaType('All')}
       >
         All
       </button>
       <button
-        className={mediaType === 'vinyl' ? 'active' : ''}
-        onClick={() => setMediaType('vinyl')}
+        className={mediaType === 'Vinyl' ? 'active' : ''}
+        onClick={() => setMediaType('Vinyl')}
       >
         Vinyl
       </button>
       <button
-        className={mediaType === 'cassette' ? 'active' : ''}
-        onClick={() => setMediaType('cassette')}
+        className={mediaType === 'Cassette' ? 'active' : ''}
+        onClick={() => setMediaType('Cassette')}
       >
         Cassettes
       </button>
       <button
-        className={mediaType === '45' ? 'active' : ''}
-        onClick={() => setMediaType('45')}
+        className={mediaType === '45s' ? 'active' : ''}
+        onClick={() => setMediaType('45s')}
       >
         45s
       </button>
@@ -34,4 +34,3 @@ const FilterBar = ({ mediaType, setMediaType }) => {
 };
 
 export default FilterBar;
-
