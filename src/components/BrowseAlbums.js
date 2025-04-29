@@ -1,8 +1,8 @@
 // ✅ Imports
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import '../css/BrowseAlbums.css';
-import FilterBar from './FilterBar';
+import 'css/BrowseAlbums.css';
+import FilterBar from 'components/FilterBar';
 import ExpandableAlbumCard from 'components/ExpandableAlbumCard';
 import 'css/expandableAlbumCard.css';
 
@@ -88,7 +88,7 @@ const BrowseAlbums = ({
     }
 
     if (mediaType !== 'All') {
-      filtered = filtered.filter((album) => album.folder === mediaType);
+      filtered = filtered.filter((album) => album.format === mediaType);
     }
 
     setFilteredAlbums(filtered);
