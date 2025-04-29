@@ -88,7 +88,7 @@ const BrowseAlbums = ({
     }
 
     if (mediaType !== 'All') {
-      filtered = filtered.filter((album) => album.format === mediaType);
+      filtered = filtered.filter((album) => album.folder === mediaType);
     }
 
     setFilteredAlbums(filtered);
