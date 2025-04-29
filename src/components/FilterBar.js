@@ -18,8 +18,8 @@ const FilterBar = ({ mediaType, setMediaType }) => {
         Vinyl
       </button>
       <button
-        className={mediaType === 'Cassette' ? 'active' : ''}
-        onClick={() => setMediaType('Cassette')}
+        className={mediaType === 'Cassettes' ? 'active' : ''}
+        onClick={() => setMediaType('Cassettes')}
       >
         Cassettes
       </button>
