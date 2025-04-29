@@ -80,20 +80,38 @@
 
 ---
 
-# ✅ Status as of 2025-04-28
+## 2025-04-29
 
-- Basic album browsing working.
-- Search and filter working.
-- Album grid visually restored.
-- No current crash or fatal errors.
+### ✅ FilterBar Fixes and Filtering Logic Debugging
+- Fixed broken media type filtering in `BrowseAlbums.js`.
+- Identified that `FilterBar` was passing lowercase media types (`vinyl`, `cassette`, `45`) while `folder` values in Supabase were capitalized (`Vinyl`, `Cassette`, `45s`).
+- Corrected comparison in `useEffect` to normalize casing: `album.folder?.toLowerCase() === mediaType.toLowerCase()`.
+- Added debug logging to confirm album data and filter results.
+- Confirmed `Vinyl` filter working; identified and resolved additional string mismatch with `Cassette` (was incorrectly singular in filter logic).
+- Corrected `FilterBar.js` to pass exact values: `"Vinyl"`, `"Cassette"`, `"45s"`, `"All"`.
+
+### ✅ Shell Alias Management for Git Workflow
+- Confirmed `pushit` and `pullit` are shell aliases defined in `.bashrc`.
+- Created persistent aliases:
+  - `pushit`: commits and pushes to `origin/main` with a custom message.
+  - `pushit-working`: also creates a timestamped Git tag like `working-20250429-1532` and pushes it.
+  - `pullit-working`: fetches and checks out the latest `working-*` tag from GitHub.
+- Added all aliases to `~/.bashrc` with `source ~/.bashrc` to persist across sessions.
+
+---
+
+# ✅ Status as of 2025-04-29
+
+- Album browsing fully restored and filtered by artist, title, and folder (Vinyl, Cassette, 45s).
+- Search bar and filter bar both working as intended.
+- Album grid renders even without image assets using fallback placeholders.
+- Git workflow improved with custom aliases and version tagging.
 
 ---
 
 # 📋 Next Steps (planned)
 
-- Reintroduce sides (track lists) carefully after grid stability confirmed.
-- Replace broken Discogs API token or adjust fallback strategy.
-- Implement graceful error handling for fallback cover fetching.
-
----
-test
+- Reintroduce track side selection (A–F) from external source with Discogs fallback.
+- Add support for customer vinyl override queue entries with admin mode.
+- Replace expired Discogs token or switch to alternate metadata source.
+- Begin editable tracklist integration for album sides and request form context.
