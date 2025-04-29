@@ -96,3 +96,4 @@
 - Implement graceful error handling for fallback cover fetching.
 
 ---
+test
