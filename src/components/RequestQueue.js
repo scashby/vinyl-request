@@ -99,7 +99,7 @@ const RequestQueue = ({
       {requests.length === 0 ? (
         <p>No requests yet.</p>
       ) : (
-        <div className="album-grid request-grid">
+        <div className="requests-list">
           {requests.map((request) => {
             // Get album data from our Supabase lookup
             const album = albumData[request.id];
@@ -108,75 +108,78 @@ const RequestQueue = ({
             const imageUrl = album?.image_url;
             
             return (
-              <div
-                key={request.id}
-                className="album-card request-card"
+              <div 
+                key={request.id} 
+                className="request-row"
                 onClick={() => handleAlbumClick(request.id)}
               >
-                <div style={{ position: 'relative', width: '100%', height: '150px' }}>
-                  {imageUrl && imageUrl !== 'no' ? (
-                    <img
-                      src={imageUrl}
-                      alt={`${request.artist} - ${request.title}`}
+                <div className="request-album">
+                  {/* Album image */}
+                  <div style={{ position: 'relative', width: '100%', height: '150px' }}>
+                    {imageUrl && imageUrl !== 'no' ? (
+                      <img
+                        src={imageUrl}
+                        alt={`${request.artist} - ${request.title}`}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                        onError={(e) => {
+                          console.error('Image load failed for:', request.artist, request.title);
+                          e.target.onerror = null;
+                          e.target.style.display = 'none';
+                          const fallback = e.target.nextElementSibling;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+
+                    {/* Placeholder black box if no image */}
+                    <div
+                      className="album-placeholder"
                       style={{
+                        display: (!imageUrl || imageUrl === 'no') ? 'flex' : 'none',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover',
+                        backgroundColor: 'black',
+                        color: 'white',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        padding: '5px',
+                        fontSize: '0.9em',
                       }}
-                      onError={(e) => {
-                        console.error('Image load failed for:', request.artist, request.title);
-                        e.target.onerror = null;
-                        e.target.style.display = 'none';
-                        const fallback = e.target.nextElementSibling;
-                        if (fallback) fallback.style.display = 'flex';
-                      }}
-                    />
-                  ) : null}
+                    >
+                      {request.artist} – {request.title}
+                    </div>
+                  </div>
 
-                  {/* Placeholder black box if no image */}
+                  {/* Album info under image/placeholder */}
                   <div
-                    className="album-placeholder"
-                    style={{
-                      display: (!imageUrl || imageUrl === 'no') ? 'flex' : 'none',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      backgroundColor: 'black',
-                      color: 'white',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      textAlign: 'center',
-                      padding: '5px',
-                      fontSize: '0.9em',
-                    }}
+                    className="album-info-text"
+                    style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}
                   >
                     {request.artist} – {request.title}
                   </div>
-                </div>
-
-                {/* Album info under image/placeholder */}
-                <div
-                  className="album-info-text"
-                  style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}
-                >
-                  {request.artist} – {request.title}
+                  
+                  {/* Side label */}
+                  <div style={{ textAlign: 'center', fontSize: '0.8em', color: '#666' }}>
+                    Side {request.side}
+                  </div>
                 </div>
                 
-                {/* Side label */}
-                <div className="side-label" style={{ textAlign: 'center', fontSize: '0.8em', color: '#666' }}>
-                  Side {request.side}
-                </div>
-                
-                {/* Request info */}
                 <div className="request-info">
                   <div className="requested-by">
                     Requested by {formatRequesters(request.name)}
                   </div>
                   
-                  <div className="votes-info">
-                    <span className="vote-count">{request.votes} votes</span>
+                  <div className="vote-section">
+                    <div className="vote-count">{request.votes} votes</div>
+                    
                     {!adminMode && (
                       <button
                         onClick={(e) => {
@@ -192,7 +195,6 @@ const RequestQueue = ({
                   </div>
                 </div>
                 
-                {/* Admin controls */}
                 {adminMode && (
                   <div className="admin-controls">
                     <button onClick={(e) => { e.stopPropagation(); markNowPlaying(request.id); }}>▶️</button>
@@ -206,7 +208,7 @@ const RequestQueue = ({
         </div>
       )}
       
-      {/* Expanded Album Card */}
+      {/* Using ExpandableAlbumCard for expanded view instead of inline expansion */}
       {expandedId && albumData[expandedId] && (
         <ExpandableAlbumCard
           album={albumData[expandedId]}

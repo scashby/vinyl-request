@@ -1,60 +1,45 @@
 /* RequestQueue.css */
 .request-queue {
   margin-bottom: 30px;
+  position: relative;
 }
 
-/* Album grid for requests - modified to be a vertical layout */
-.request-grid {
+/* Vertical list of requests */
+.requests-list {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding: 10px 0;
+  margin-top: 15px;
 }
 
-/* Request card styling */
-.request-card {
-  width: 100%;
+.request-row {
+  display: flex;
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background: white;
-  transition: transform 0.2s, box-shadow 0.2s;
+  background-color: white;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  align-items: center;
 }
 
-.request-card:hover {
+.request-row:hover {
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Now Playing and Up Next */
-.now-playing,
-.up-next {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f8f8f8;
-  border-radius: 8px;
+/* Album styling */
+.request-album {
+  width: 150px;
+  margin-right: 20px;
 }
 
-.now-playing {
-  border-left: 4px solid #4caf50;
-}
-
-.up-next {
-  border-left: 4px solid #2196f3;
-}
-
-.now-playing h4,
-.up-next h4 {
-  margin-top: 0;
-  margin-bottom: 10px;
-}
-
-/* Request info */
+/* Request info styling */
 .request-info {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .requested-by {
@@ -64,10 +49,10 @@
   text-overflow: ellipsis;
 }
 
-.votes-info {
+.vote-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
 }
 
 .vote-count {
@@ -90,9 +75,8 @@
 /* Admin controls */
 .admin-controls {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-left: 15px;
 }
 
 .admin-controls button {
@@ -102,9 +86,44 @@
   cursor: pointer;
 }
 
+/* Now Playing and Up Next styles */
+.now-playing,
+.up-next {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+}
+
+.now-playing {
+  border-left: 4px solid #4caf50;
+}
+
+.up-next {
+  border-left: 4px solid #2196f3;
+}
+
+.now-playing h4,
+.up-next h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
 /* Media queries for responsiveness */
 @media (max-width: 768px) {
-  .request-card {
-    padding: 10px;
+  .request-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .request-album {
+    width: 100%;
+    max-width: 200px;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  
+  .request-info {
+    width: 100%;
   }
 }
