@@ -178,17 +178,17 @@ const BrowseAlbums = ({
           });
         
           // ✅ Reset and forcibly exit handleSubmit by breaking execution chain
-          setTimeout(() => {
-            setName('');
-            setSide('A');
-            setExpandedId(null);
-            if (parentHandleSubmit) {
-              parentHandleSubmit(album);
-            }
-          }, 0);
-        
-          // ❌ Do NOT proceed to insert
-          throw new Error('Upvote complete — abort insert');
+          setName('');
+          setSide('A');
+          setExpandedId(null);
+          
+          if (parentHandleSubmit) {
+            parentHandleSubmit(album);
+          }
+          
+          // ✅ Exit cleanly without triggering catch
+          return;
+          
         }        
         
 
