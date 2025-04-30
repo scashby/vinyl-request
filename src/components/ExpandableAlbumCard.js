@@ -88,6 +88,7 @@ const ExpandableAlbumCard = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(album);
+    onClose(); // ✅ Ensure card closes after successful submit
   };
 
   // ✅ Render component
