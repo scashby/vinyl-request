@@ -378,7 +378,6 @@ const BrowseAlbums = ({
       {/* ✅ New Expandable Album Card */}
       {expandedId && (
         <ExpandableAlbumCard
-          key={expandedId} // 🛠 force React to treat it as new when ID changes
           album={albums.find(album => album.id === expandedId)}
           currentEvent={currentEvent}
           onClose={handleCloseExpandedCard}
