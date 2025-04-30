@@ -150,11 +150,11 @@ const BrowseAlbums = ({
         if (existingRequests && existingRequests.length > 0) {
           // ✅ Match found — update existing request
           const existingRequest = existingRequests[0];
-
+        
           const updatedName = existingRequest.name.includes(name)
             ? existingRequest.name
             : `${existingRequest.name}, ${name}`;
-
+        
           const { error: updateError } = await supabase
             .from('requests')
             .update({
@@ -162,7 +162,7 @@ const BrowseAlbums = ({
               name: updatedName
             })
             .eq('id', existingRequest.id);
-
+        
           if (updateError) {
             console.error('Error updating request:', updateError);
             setRequestStatus({
@@ -171,14 +171,24 @@ const BrowseAlbums = ({
             });
             return;
           }
-
+        
           setRequestStatus({
             success: true,
             message: 'Request upvoted successfully!'
           });
-
-          return; // ✅ Immediate return — prevents insert from running
+        
+          // ✅ Reset form state and close expanded card after upvote
+          setName('');
+          setSide('A');
+          setExpandedId(null);
+        
+          if (parentHandleSubmit) {
+            parentHandleSubmit(album);
+          }
+        
+          return;
         }
+        
 
         // ✅ Defensive guard: ensure data is present before inserting
         if (!album.id || !side || !activeEventId) {
@@ -354,6 +364,7 @@ const BrowseAlbums = ({
       {/* ✅ New Expandable Album Card */}
       {expandedId && (
         <ExpandableAlbumCard
+          key={expandedId} // 🛠 force React to treat it as new when ID changes
           album={albums.find(album => album.id === expandedId)}
           currentEvent={currentEvent}
           onClose={handleCloseExpandedCard}
@@ -364,6 +375,7 @@ const BrowseAlbums = ({
           onSubmit={handleSubmit}
         />
       )}
+
     </div>
   );
 };
