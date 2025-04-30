@@ -171,6 +171,7 @@ const BrowseAlbums = ({
           message: 'Request upvoted successfully!'
         });
 
+        // 🛠 Moved state reset above return to prevent insert fallback
         setName('');
         setExpandedId(null);
         setSide('A');
@@ -178,7 +179,8 @@ const BrowseAlbums = ({
         if (parentHandleSubmit) {
           parentHandleSubmit(album);
         }
-        return;
+
+        return; // ✅ Prevent fallback insert after update
       }
 
       // ✅ No match found — create new request
