@@ -125,11 +125,10 @@ const BrowseAlbums = ({
 
       try {
         // ✅ Check if this album+side+event already exists in the queue
-        console.log('🧪 SELECT request match using:', {
-          albumId: album.id,
-          side,
-          eventId: activeEventId
-        });
+        console.log(
+          `🧪 SELECT request match using: albumId=${album.id}, side=${side}, eventId=${activeEventId}`
+        );
+        
         console.log('🧪 Checking for existing request:', {
           albumId: album.id,
           side,
