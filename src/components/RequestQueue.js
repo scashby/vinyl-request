@@ -25,11 +25,6 @@ const RequestQueue = ({
     }
   };
 
-  // Handle close of expanded album card
-  const handleCloseExpandedCard = () => {
-    setExpandedId(null);
-  };
-
   return (
     <section className="request-queue">
       <h3>📻 Request Queue</h3>
@@ -54,15 +49,12 @@ const RequestQueue = ({
       {requests.length === 0 ? (
         <p>No requests yet.</p>
       ) : (
-        <div className="requests-container">
+        <div className="requests-list">
           {requests.map((request) => (
-            <div 
-              key={request.id} 
-              className="request-row"
-              onClick={() => setExpandedId(request.id)}
-            >
-              <div className="request-album">
-                <div style={{ position: 'relative', width: '100px', height: '100px' }}>
+            <div key={request.id} className="request-row">
+              <div className="request-album" onClick={() => setExpandedId(expandedId === request.id ? null : request.id)}>
+                {/* Album image - EXACT SAME CODE from BrowseAlbums.js */}
+                <div style={{ position: 'relative', width: '100%', height: '150px' }}>
                   {request.image_url && request.image_url !== 'no' ? (
                     <img
                       src={request.image_url}
@@ -82,7 +74,7 @@ const RequestQueue = ({
                     />
                   ) : null}
 
-                  {/* Placeholder black box if no image */}
+                  {/* Placeholder black box if no image - EXACT SAME CODE from BrowseAlbums.js */}
                   <div
                     className="album-placeholder"
                     style={{
@@ -104,10 +96,17 @@ const RequestQueue = ({
                     {request.artist} – {request.title}
                   </div>
                 </div>
-                <div className="album-info-text">
+
+                {/* Album info under image/placeholder - EXACT SAME CODE from BrowseAlbums.js */}
+                <div
+                  className="album-info-text"
+                  style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}
+                >
                   {request.artist} – {request.title}
                 </div>
-                <div className="side-label">
+                
+                {/* Side label */}
+                <div style={{ textAlign: 'center', fontSize: '0.8em', color: '#666' }}>
                   Side {request.side}
                 </div>
               </div>
@@ -116,15 +115,14 @@ const RequestQueue = ({
                 <div className="requested-by">
                   Requested by {formatRequesters(request.name)}
                 </div>
-                <div className="votes-container">
-                  <span className="vote-count">{request.votes} votes</span>
+                
+                <div className="vote-section">
+                  <div className="vote-count">{request.votes} votes</div>
+                  
                   {!adminMode && (
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        voteRequest(request.id, 1);
-                      }}
-                      className="upvote-button"
+                      onClick={() => voteRequest(request.id, 1)}
+                      className="upvote-btn"
                       title="Click to upvote"
                     >
                       👍
@@ -134,70 +132,39 @@ const RequestQueue = ({
               </div>
               
               {adminMode && (
-                <div className="admin-actions">
-                  <button onClick={(e) => { e.stopPropagation(); markNowPlaying(request.id); }}>▶️</button>
-                  <button onClick={(e) => { e.stopPropagation(); markPlayed(request.id); }}>✅</button>
-                  <button onClick={(e) => { e.stopPropagation(); deleteRequest(request.id); }}>🗑</button>
+                <div className="admin-controls">
+                  <button onClick={() => markNowPlaying(request.id)}>▶️</button>
+                  <button onClick={() => markPlayed(request.id)}>✅</button>
+                  <button onClick={() => deleteRequest(request.id)}>🗑</button>
+                </div>
+              )}
+              
+              {/* Expanded album details */}
+              {expandedId === request.id && (
+                <div className="request-expanded">
+                  <h3>Album Details</h3>
+                  <p>
+                    {request.year && `${request.year} • `}
+                    {request.format && `${request.format} • `}
+                    {request.folder || 'Unknown'}
+                  </p>
+                  
+                  <div className="side-info">
+                    <h4>Side {request.side}</h4>
+                    {request.tracks && request.tracks.length > 0 ? (
+                      <ol className="track-list">
+                        {request.tracks.map((track, idx) => (
+                          <li key={idx}>{track}</li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p>No tracks available for Side {request.side}.</p>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
           ))}
-        </div>
-      )}
-      
-      {/* Expanded Album Card */}
-      {expandedId && (
-        <div className="expanded-overlay">
-          <div className="expanded-album-card">
-            <div className="expanded-card-header">
-              <h2>{requests.find(r => r.id === expandedId)?.artist} - {requests.find(r => r.id === expandedId)?.title}</h2>
-              <button className="close-button" onClick={handleCloseExpandedCard}>×</button>
-            </div>
-            <div className="expanded-card-content">
-              <div className="album-image">
-                {(() => {
-                  const album = requests.find(r => r.id === expandedId);
-                  return album?.image_url && album.image_url !== 'no' ? (
-                    <img 
-                      src={album.image_url} 
-                      alt={`${album.artist} - ${album.title}`}
-                    />
-                  ) : (
-                    <div className="album-placeholder">
-                      {album?.artist} - {album?.title}
-                    </div>
-                  );
-                })()}
-              </div>
-              <div className="album-details">
-                {(() => {
-                  const album = requests.find(r => r.id === expandedId);
-                  return (
-                    <>
-                      <p>{album?.year} • {album?.format} • {album?.folder}</p>
-                      <div className="side-info">
-                        <h4>Requested Side: {album?.side}</h4>
-                      </div>
-                      {album?.tracks && album.tracks.length > 0 ? (
-                        <div className="track-list">
-                          <h4>Tracks:</h4>
-                          <ol>
-                            {album.tracks.map((track, idx) => (
-                              <li key={idx}>{track}</li>
-                            ))}
-                          </ol>
-                        </div>
-                      ) : (
-                        <div className="no-tracks-message">
-                          No tracks available for Side {album?.side}.
-                        </div>
-                      )}
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </section>
