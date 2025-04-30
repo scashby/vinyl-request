@@ -1,11 +1,10 @@
 // src/components/EventCarousel.js
 import React from 'react';
-import '../css/EventDisplay.css';
+import '../css/EventCarousel.css'; // Make sure this points to your CSS file
 
 /**
  * Scrollable list of all upcoming events.
  * Highlights the selected one and updates activeEventId on click.
- * Now includes instructive text and better date formatting.
  */
 export default function EventCarousel({ events, activeEventId, setActiveEventId }) {
   // Find the next upcoming event (first event whose date is >= today)
@@ -55,7 +54,7 @@ export default function EventCarousel({ events, activeEventId, setActiveEventId 
                 <strong>{formatDate(evt.date)}</strong><br />
                 <span>{evt.time}</span><br />
                 <div>{evt.title}</div>
-                <small>{evt.info}</small>
+                {evt.info && <small>{evt.info}</small>}
               </div>
             </div>
           );
