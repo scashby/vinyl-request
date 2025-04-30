@@ -113,3 +113,57 @@
 .event-card.next-event {
   padding-top: 30px; /* Increase top padding to make room for label */
 }
+/* Add these styles to your EventDisplay.css file */
+
+.carousel-instructions {
+  margin-bottom: 1rem;
+  text-align: center;
+  padding: 0.8rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.carousel-instructions p {
+  margin: 0;
+  font-size: 1rem;
+  color: #495057;
+}
+
+/* Event card styling */
+.event-card {
+  position: relative;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  overflow: hidden; /* Important to contain the next-event-label */
+  padding: 0 !important; /* Override any existing padding */
+  display: flex;
+  flex-direction: column;
+}
+
+.event-content {
+  padding: 12px; /* Move padding from card to content */
+}
+
+/* Next event styling */
+.event-card.next-event {
+  background-color: #f5f9ff;
+  border: 1px solid #e3f2fd;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+/* Next event label */
+.next-event-label {
+  background-color: #1e88e5;
+  color: white;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 4px 0;
+  width: 100%;
+}
+
+/* Active event styling - ensure it works with next event */
+.event-card.active {
+  border-color: #1976d2;
+}

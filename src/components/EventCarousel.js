@@ -5,8 +5,7 @@ import '../css/EventDisplay.css';
 /**
  * Scrollable list of all upcoming events.
  * Highlights the selected one and updates activeEventId on click.
- * Now includes instructive text, better date formatting,
- * and more elegant next event highlighting.
+ * Now includes instructive text and better date formatting.
  */
 export default function EventCarousel({ events, activeEventId, setActiveEventId }) {
   // Find the next upcoming event (first event whose date is >= today)
@@ -41,23 +40,26 @@ export default function EventCarousel({ events, activeEventId, setActiveEventId 
       
       <h3>🎟️ Upcoming Events</h3>
       <div className="carousel-scroll">
-        {sortedEvents.map(evt => (
-          <div
-            key={evt.id}
-            className={`event-card ${evt.id === activeEventId ? 'active' : ''} ${evt.id === nextEventId ? 'next-event' : ''}`}
-            onClick={() => setActiveEventId(evt.id)}
-          >
-            {evt.id === nextEventId && (
-              <div className="next-event-label">
-                <span>Next Event</span>
+        {sortedEvents.map(evt => {
+          const isNextEvent = evt.id === nextEventId;
+          return (
+            <div
+              key={evt.id}
+              className={`event-card ${evt.id === activeEventId ? 'active' : ''} ${isNextEvent ? 'next-event' : ''}`}
+              onClick={() => setActiveEventId(evt.id)}
+            >
+              {isNextEvent && (
+                <div className="next-event-label">Next Event</div>
+              )}
+              <div className="event-content">
+                <strong>{formatDate(evt.date)}</strong><br />
+                <span>{evt.time}</span><br />
+                <div>{evt.title}</div>
+                <small>{evt.info}</small>
               </div>
-            )}
-            <strong>{formatDate(evt.date)}</strong><br />
-            <span>{evt.time}</span><br />
-            <div>{evt.title}</div>
-            <small>{evt.info}</small>
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
