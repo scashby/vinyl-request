@@ -1,85 +1,38 @@
 /* RequestQueue.css */
 .request-queue {
-  padding: 1rem 0;
+  margin-bottom: 30px;
 }
 
-/* Request list styling - vertical layout */
-.requests-list {
+/* Album grid for requests - modified to be a vertical layout */
+.request-grid {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-top: 1rem;
+  padding: 10px 0;
 }
 
-.request-row {
-  display: flex;
+/* Request card styling */
+.request-card {
+  width: 100%;
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: white;
-  align-items: flex-start;
-}
-
-/* Album styling */
-.request-album {
-  width: 150px;
-  margin-right: 20px;
+  background: white;
+  transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
 }
 
-/* Request info styling */
-.request-info {
-  flex: 1;
-  margin-left: 15px;
+.request-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-.requested-by {
-  margin-bottom: 10px;
-}
-
-.vote-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.vote-count {
-  font-weight: bold;
-}
-
-.upvote-btn {
-  background: none;
-  border: none;
-  font-size: 1.2em;
-  cursor: pointer;
-  padding: 5px;
-}
-
-.upvote-btn:hover {
-  background-color: #f0f0f0;
-  border-radius: 4px;
-}
-
-/* Admin controls */
-.admin-controls {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.admin-controls button {
-  background: none;
-  border: none;
-  font-size: 1.2em;
-  cursor: pointer;
-}
-
-/* Now Playing and Up Next styles */
+/* Now Playing and Up Next */
 .now-playing,
 .up-next {
   margin-bottom: 20px;
   padding: 15px;
-  background-color: #f8f8f8;
+  background: #f8f8f8;
   border-radius: 8px;
 }
 
@@ -97,48 +50,61 @@
   margin-bottom: 10px;
 }
 
-/* Expanded request details */
-.request-expanded {
-  width: 100%;
-  margin-top: 15px;
-  padding: 15px;
-  background-color: #f9f9f9;
+/* Request info */
+.request-info {
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid #eee;
 }
 
-.request-expanded h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
+.requested-by {
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.side-info {
-  margin-top: 15px;
+.votes-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.side-info h4 {
-  margin-bottom: 10px;
+.vote-count {
+  font-weight: bold;
 }
 
-.track-list {
-  margin: 0;
-  padding-left: 20px;
+.upvote-btn {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
 }
 
-/* Responsive design */
+.upvote-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Admin controls */
+.admin-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.admin-controls button {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+/* Media queries for responsiveness */
 @media (max-width: 768px) {
-  .request-row {
-    flex-direction: column;
-  }
-  
-  .request-album {
-    width: 100%;
-    max-width: 200px;
-    margin-bottom: 15px;
-    margin-right: 0;
-  }
-  
-  .request-info {
-    width: 100%;
-    margin-left: 0;
+  .request-card {
+    padding: 10px;
   }
 }
