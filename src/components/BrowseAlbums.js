@@ -130,7 +130,12 @@ const BrowseAlbums = ({
           side,
           eventId: activeEventId
         });
-
+        console.log('🧪 Checking for existing request:', {
+          albumId: album.id,
+          side,
+          eventId: activeEventId
+        });
+        
         const { data: existingRequests, error: checkError } = await supabase
           .from('requests')
           .select('id, votes, name')
