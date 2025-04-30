@@ -174,7 +174,8 @@ const BrowseAlbums = ({
           setName('');
           setSide('A');
           setExpandedId(null);
-          if (parentHandleSubmit) parentHandleSubmit(album);
+        // Only call parentHandleSubmit if no existing request was found and processed
+        // REMOVE THIS LINE: if (parentHandleSubmit) parentHandleSubmit(album);
         }
       } else {
         // ✅ Defensive guard: ensure data is present before inserting
@@ -217,6 +218,7 @@ const BrowseAlbums = ({
           setName('');
           setSide('A');
           setExpandedId(null);
+          // Only call parentHandleSubmit if no existing request was found and processed
           if (parentHandleSubmit) parentHandleSubmit(album);
         }
       }
