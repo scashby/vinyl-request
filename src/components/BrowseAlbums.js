@@ -114,113 +114,115 @@ const BrowseAlbums = ({
     setExpandedId(null);
   };
 
-  // ✅ Enhanced handleSubmit with duplicate detection
-  const handleSubmit = async (album) => {
-    if (!activeEventId) {
+ // ✅ Enhanced handleSubmit with duplicate detection and safe update
+const handleSubmit = async (album) => {
+  if (!activeEventId) {
+    setRequestStatus({
+      success: false,
+      message: 'Please select an event first'
+    });
+    return;
+  }
+
+  try {
+    // ✅ Check if this album+side+event already exists in the queue
+    const { data: existingRequests, error: checkError } = await supabase
+      .from('requests')
+      .select('id, votes, name')
+      .eq('album_id', album.id)
+      .eq('side', side)
+      .eq('event_id', activeEventId);
+
+    if (checkError) {
+      console.error('Error checking for existing requests:', checkError);
       setRequestStatus({
         success: false,
-        message: 'Please select an event first'
+        message: 'Error checking for existing requests'
       });
       return;
     }
 
-    try {
-      // First, check if this album+side combination already exists in the queue
-      const { data: existingRequests, error: checkError } = await supabase
+    if (existingRequests && existingRequests.length > 0) {
+      // ✅ Match found — update existing request
+      const existingRequest = existingRequests[0];
+
+      const updatedName = existingRequest.name.includes(name)
+        ? existingRequest.name
+        : `${existingRequest.name}, ${name}`;
+
+      const { error: updateError } = await supabase
         .from('requests')
-        .select('id, votes, name')
-        .eq('album_id', album.id)
-        .eq('side', side)
-        .eq('event_id', activeEventId);
-      
-      if (checkError) {
-        console.error('Error checking for existing requests:', checkError);
+        .update({
+          votes: existingRequest.votes + 1,
+          name: updatedName
+        })
+        .eq('id', existingRequest.id);
+
+      if (updateError) {
+        console.error('Error updating request:', updateError);
         setRequestStatus({
           success: false,
-          message: 'Error checking for existing requests'
+          message: 'Error updating request'
         });
         return;
       }
-      
-      if (existingRequests && existingRequests.length > 0) {
-        // Album+side already exists in queue, upvote it
-        const existingRequest = existingRequests[0];
-        
-        // Update the votes and add the new name to the submitter(s)
-        // If name already includes the current name, don't add it again
-        const updatedName = existingRequest.name.includes(name) 
-          ? existingRequest.name 
-          : `${existingRequest.name}, ${name}`;
-        
-        const { error: updateError } = await supabase
-          .from('requests')
-          .update({ 
-            votes: existingRequest.votes + 1,
-            name: updatedName
-          })
-          .eq('id', existingRequest.id);
-        
-        if (updateError) {
-          console.error('Error updating request:', updateError);
-          setRequestStatus({
-            success: false,
-            message: 'Error updating request'
-          });
-          return;
-        }
-        
-        setRequestStatus({
-          success: true,
-          message: 'Request upvoted successfully!'
-        });
-      } else {
-        // Create new request
-        const { error: insertError } = await supabase
-          .from('requests')
-          .insert({
-            artist: album.artist,
-            title: album.title,
-            side,
-            name,
-            status: 'pending',
-            votes: 1,
-            folder: album.folder,
-            year: album.year,
-            format: album.format,
-            album_id: album.id,
-            event_id: activeEventId
-          });
-        
-        if (insertError) {
-          console.error('Error submitting request:', insertError);
-          setRequestStatus({
-            success: false,
-            message: 'Error submitting request'
-          });
-          return;
-        }
-        
-        setRequestStatus({
-          success: true,
-          message: 'Request submitted successfully!'
-        });
-      }
-      
-      // Reset form
-      setName('');
-      
-      // Support for parent component's handleSubmit if needed
-      if (parentHandleSubmit) {
-        parentHandleSubmit(album);
-      }
-    } catch (error) {
-      console.error('Error handling request:', error);
+
+      setRequestStatus({
+        success: true,
+        message: 'Request upvoted successfully!'
+      });
+
+      // ✅ Prevent falling through to insert block
+      return;
+    }
+
+    // ✅ No match found — create new request
+    const { error: insertError } = await supabase
+      .from('requests')
+      .insert({
+        artist: album.artist,
+        title: album.title,
+        side,
+        name,
+        status: 'pending',
+        votes: 1,
+        folder: album.folder,
+        year: album.year,
+        format: album.format,
+        album_id: album.id,
+        event_id: activeEventId
+      });
+
+    if (insertError) {
+      console.error('Error submitting request:', insertError);
       setRequestStatus({
         success: false,
-        message: 'An error occurred while processing your request'
+        message: 'Error submitting request'
       });
+      return;
     }
-  };
+
+    setRequestStatus({
+      success: true,
+      message: 'Request submitted successfully!'
+    });
+
+    // ✅ Reset input
+    setName('');
+
+    // ✅ Notify parent if needed
+    if (parentHandleSubmit) {
+      parentHandleSubmit(album);
+    }
+  } catch (error) {
+    console.error('Error handling request:', error);
+    setRequestStatus({
+      success: false,
+      message: 'An error occurred while processing your request'
+    });
+  }
+};
+
 
   // ✅ Render component
   return (
