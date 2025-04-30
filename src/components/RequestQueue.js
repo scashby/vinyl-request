@@ -11,7 +11,7 @@ const RequestQueue = ({
   deleteRequest,
   voteRequest
 }) => {
-  const [expandedRequest, setExpandedRequest] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
 
   // Helper function to format requesters names
   const formatRequesters = (name) => {
@@ -27,156 +27,189 @@ const RequestQueue = ({
   
   // Toggle expanded state for a request
   const toggleExpand = (requestId) => {
-    setExpandedRequest(expandedRequest === requestId ? null : requestId);
+    setExpandedId(expandedId === requestId ? null : requestId);
   };
 
   return (
     <section className="request-queue">
       <h3>📻 Request Queue</h3>
 
-      {nowPlaying && (
-        <div className="now-playing request-card">
-          <div className="request-card-header">
-            <h4>▶️ Now Playing</h4>
-          </div>
-          <div className="request-card-content">
-            <div className="album-image">
-              {nowPlaying.image_url && nowPlaying.image_url !== 'no' ? (
-                <img 
-                  src={nowPlaying.image_url} 
-                  alt={`${nowPlaying.artist} - ${nowPlaying.title}`}
-                />
-              ) : (
-                <div className="album-placeholder">
-                  {nowPlaying.artist.substring(0, 1)}{nowPlaying.title.substring(0, 1)}
-                </div>
-              )}
-            </div>
-            <div className="request-details">
-              <div className="request-title">
-                <strong>{nowPlaying.artist}</strong>
-                <span className="separator">—</span>
-                <span>{nowPlaying.title}</span>
-                <span className="side-label">Side {nowPlaying.side}</span>
-              </div>
-              <div className="request-meta">
-                <small>Requested by {formatRequesters(nowPlaying.name)}</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {upNext && (
-        <div className="up-next request-card">
-          <div className="request-card-header">
-            <h4>⏭ Up Next</h4>
-          </div>
-          <div className="request-card-content">
-            <div className="album-image">
-              {upNext.image_url && upNext.image_url !== 'no' ? (
-                <img 
-                  src={upNext.image_url} 
-                  alt={`${upNext.artist} - ${upNext.title}`}
-                />
-              ) : (
-                <div className="album-placeholder">
-                  {upNext.artist.substring(0, 1)}{upNext.title.substring(0, 1)}
-                </div>
-              )}
-            </div>
-            <div className="request-details">
-              <div className="request-title">
-                <strong>{upNext.artist}</strong>
-                <span className="separator">—</span>
-                <span>{upNext.title}</span>
-                <span className="side-label">Side {upNext.side}</span>
-              </div>
-              <div className="request-meta">
-                <small>Requested by {formatRequesters(upNext.name)}</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {requests.length === 0 ? (
         <p>No requests yet.</p>
       ) : (
-        <ul className="queue-list">
-          {requests.map((req) => (
-            <li 
-              key={req.id} 
-              className={`queue-item ${req.status} ${expandedRequest === req.id ? 'expanded' : ''}`}
-              onClick={() => toggleExpand(req.id)}
-            >
-              <div className="request-card-content">
-                <div className="album-image">
-                  {req.image_url && req.image_url !== 'no' ? (
-                    <img 
-                      src={req.image_url} 
-                      alt={`${req.artist} - ${req.title}`}
+        <div className="album-grid">
+          {requests.map((request) => (
+            <div key={request.id} className="request-item">
+              <div 
+                className="album-card" 
+                onClick={() => toggleExpand(request.id)}
+              >
+                <div className="album-image-container">
+                  {request.image_url && request.image_url !== 'no' ? (
+                    <img
+                      src={request.image_url}
+                      alt={`${request.artist} - ${request.title}`}
+                      className="album-cover"
                     />
                   ) : (
                     <div className="album-placeholder">
-                      {req.artist.substring(0, 1)}{req.title.substring(0, 1)}
+                      {request.artist} - {request.title}
                     </div>
                   )}
-                </div>
-                <div className="request-details">
-                  <div className="request-title">
-                    <strong>{req.artist}</strong>
-                    <span className="separator">—</span>
-                    <span>{req.title}</span>
-                    <span className="side-label">Side {req.side}</span>
-                  </div>
-                  <div className="request-meta">
-                    <small>Requested by {formatRequesters(req.name)}</small>
-                    <span className="vote-count">
-                      <span className="votes-number">{req.votes}</span>
-                      <span className="votes-label">votes</span>
-                    </span>
-                  </div>
                 </div>
                 
-                <div className="request-actions" onClick={(e) => e.stopPropagation()}>
-                  {adminMode ? (
-                    <div className="admin-buttons">
-                      <button onClick={() => markNowPlaying(req.id)} className="action-btn play-btn">▶️</button>
-                      <button onClick={() => markPlayed(req.id)} className="action-btn done-btn">✅</button>
-                      <button onClick={() => deleteRequest(req.id)} className="action-btn delete-btn">🗑</button>
-                    </div>
-                  ) : (
-                    <div className="vote-buttons">
-                      <button onClick={() => voteRequest(req.id, 1)} className="action-btn upvote-btn">👍</button>
-                    </div>
-                  )}
+                <div className="album-info-text">
+                  <div className="album-title">{request.artist} - {request.title}</div>
+                  <div className="side-text">Side {request.side}</div>
                 </div>
+                
+                <div className="request-meta">
+                  <div className="requested-by">
+                    Requested by {formatRequesters(request.name)}
+                  </div>
+                  <div className="votes-container">
+                    <span className="votes-count">{request.votes} votes</span>
+                    {!adminMode && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          voteRequest(request.id, 1);
+                        }} 
+                        className="upvote-btn"
+                        title="Give this a like"
+                      >
+                        👍
+                      </button>
+                    )}
+                    <span className="vote-prompt">Click the thumbs up to give it a like</span>
+                  </div>
+                </div>
+
+                {adminMode && (
+                  <div className="admin-actions" onClick={e => e.stopPropagation()}>
+                    <button onClick={() => markNowPlaying(request.id)} className="admin-btn">▶️</button>
+                    <button onClick={() => markPlayed(request.id)} className="admin-btn">✅</button>
+                    <button onClick={() => deleteRequest(request.id)} className="admin-btn">🗑</button>
+                  </div>
+                )}
               </div>
               
-              {expandedRequest === req.id && (
-                <div className="expanded-content">
-                  <div className="expanded-details">
-                    <div className="expanded-info">
-                      <p><strong>Format:</strong> {req.format || 'Unknown'}</p>
-                      <p><strong>Year:</strong> {req.year || 'Unknown'}</p>
-                    </div>
-                    {req.tracks && req.tracks.length > 0 && (
-                      <div className="expanded-tracks">
-                        <h5>Side {req.side} Tracks:</h5>
-                        <ol>
-                          {req.tracks.map((track, idx) => (
-                            <li key={idx}>{track}</li>
-                          ))}
-                        </ol>
+              {expandedId === request.id && (
+                <div className="expanded-album-details">
+                  <div className="expanded-header">
+                    <h3>{request.artist} - {request.title}</h3>
+                    <button 
+                      className="close-button" 
+                      onClick={() => setExpandedId(null)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="expanded-content">
+                    <div className="album-details-left">
+                      {request.image_url && request.image_url !== 'no' ? (
+                        <img
+                          src={request.image_url}
+                          alt={`${request.artist} - ${request.title}`}
+                          className="expanded-album-cover"
+                        />
+                      ) : (
+                        <div className="expanded-album-placeholder">
+                          {request.artist} - {request.title}
+                        </div>
+                      )}
+                      
+                      <div className="album-metadata">
+                        <p>
+                          {request.year && `${request.year} • `}
+                          {request.format && `${request.format} • `}
+                          {request.folder || 'Unknown'}
+                        </p>
                       </div>
-                    )}
+                    </div>
+                    
+                    <div className="album-details-right">
+                      <div className="side-selector">
+                        <h4>Requested Side: {request.side}</h4>
+                      </div>
+                      
+                      {request.tracks && request.tracks.length > 0 ? (
+                        <div className="track-list">
+                          <h4>Tracks:</h4>
+                          <ol>
+                            {request.tracks.map((track, idx) => (
+                              <li key={idx}>{track}</li>
+                            ))}
+                          </ol>
+                        </div>
+                      ) : (
+                        <div className="no-tracks-message">
+                          No track information available for Side {request.side}.
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
+      )}
+      
+      {/* Now Playing and Up Next can be displayed separately above the grid */}
+      {nowPlaying && (
+        <div className="now-playing-container">
+          <h4>▶️ Now Playing</h4>
+          <div className="now-playing-content">
+            <div className="album-image-container">
+              {nowPlaying.image_url && nowPlaying.image_url !== 'no' ? (
+                <img
+                  src={nowPlaying.image_url}
+                  alt={`${nowPlaying.artist} - ${nowPlaying.title}`}
+                  className="album-cover"
+                />
+              ) : (
+                <div className="album-placeholder">
+                  {nowPlaying.artist} - {nowPlaying.title}
+                </div>
+              )}
+            </div>
+            <div className="now-playing-info">
+              <strong>{nowPlaying.artist}</strong> - {nowPlaying.title} (Side {nowPlaying.side})
+              <div className="requester-info">
+                Requested by {formatRequesters(nowPlaying.name)}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {upNext && (
+        <div className="up-next-container">
+          <h4>⏭ Up Next</h4>
+          <div className="up-next-content">
+            <div className="album-image-container">
+              {upNext.image_url && upNext.image_url !== 'no' ? (
+                <img
+                  src={upNext.image_url}
+                  alt={`${upNext.artist} - ${upNext.title}`}
+                  className="album-cover"
+                />
+              ) : (
+                <div className="album-placeholder">
+                  {upNext.artist} - {upNext.title}
+                </div>
+              )}
+            </div>
+            <div className="up-next-info">
+              <strong>{upNext.artist}</strong> - {upNext.title} (Side {upNext.side})
+              <div className="requester-info">
+                Requested by {formatRequesters(upNext.name)}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );
