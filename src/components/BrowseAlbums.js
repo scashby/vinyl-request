@@ -177,19 +177,18 @@ const BrowseAlbums = ({
             message: 'Request upvoted successfully!'
           });
         
-          // ✅ Reset and forcibly exit handleSubmit by breaking execution chain
+          // ✅ Reset form state and close card in parent scope
           setName('');
           setSide('A');
           setExpandedId(null);
-          
+        
           if (parentHandleSubmit) {
             parentHandleSubmit(album);
           }
-          
-          // ✅ Exit cleanly without triggering catch
-          return;
-          
-        }        
+        
+          return; // ✅ Prevent fallback insert from running
+        }
+               
         
 
         // ✅ Defensive guard: ensure data is present before inserting
