@@ -203,44 +203,52 @@ const BrowseAlbums = ({
         }
 
       // ✅ No match found — create new request
-      const { error: insertError } = await supabase
-        .from('requests')
-        .insert({
-          artist: album.artist,
-          title: album.title,
-          side,
-          name,
-          status: 'pending',
-          votes: 1,
-          folder: album.folder,
-          year: album.year,
-          format: album.format,
-          album_id: album.id,
-          event_id: activeEventId
-        });
+        try {
+          const { error: insertError } = await supabase
+            .from('requests')
+            .insert({
+              artist: album.artist,
+              title: album.title,
+              side,
+              name,
+              status: 'pending',
+              votes: 1,
+              folder: album.folder,
+              year: album.year,
+              format: album.format,
+              album_id: album.id,
+              event_id: activeEventId
+            });
 
-      if (insertError) {
-        console.error('Error submitting request:', insertError);
-        setRequestStatus({
-          success: false,
-          message: 'Error submitting request'
-        });
-        return;
-      }
+          if (insertError) {
+            console.error('Error submitting request:', insertError);
+            setRequestStatus({
+              success: false,
+              message: 'Error submitting request'
+            });
+            return;
+          }
 
-      setRequestStatus({
-        success: true,
-        message: 'Request submitted successfully!'
-      });
+          setRequestStatus({
+            success: true,
+            message: 'Request submitted successfully!'
+          });
 
-      // ✅ Reset form state after successful insert
-      setName('');
-      setExpandedId(null);
-      setSide('A');
+          setName('');
+          setSide('A');
+          setExpandedId(null);
 
-      if (parentHandleSubmit) {
-        parentHandleSubmit(album);
-      }
+          if (parentHandleSubmit) {
+            parentHandleSubmit(album);
+          }
+        } catch (err) {
+          console.error('Insert failed unexpectedly:', err);
+          setRequestStatus({
+            success: false,
+            message: 'Unexpected error while inserting request'
+          });
+        }
+
     } catch (error) {
       console.error('Error handling request:', error);
       setRequestStatus({
