@@ -5,6 +5,7 @@ import 'css/BrowseAlbums.css';
 import FilterBar from 'components/FilterBar';
 import ExpandableAlbumCard from 'components/ExpandableAlbumCard';
 import 'css/expandableAlbumCard.css';
+import { handleAlbumRequest } from '../utils/requestUtils';
 
 // ✅ BrowseAlbums component
 const BrowseAlbums = ({
@@ -114,121 +115,36 @@ const BrowseAlbums = ({
   };
 
   const handleSubmit = async (album) => {
-    if (!activeEventId) {
+    const onSuccess = (message, data, wasUpdated) => {
       setRequestStatus({
-        success: false,
-        message: 'Please select an event first'
+        success: true,
+        message: message
       });
-      return;
-    }
-  
-    try {
-      console.log('🧪 Checking for existing request:', {
-        albumId: album.id,
-        side,
-        eventId: activeEventId
-      });
-  
-      const { data: existingRequests, error: checkError } = await supabase
-        .from('requests')
-        .select('id, votes, name')
-        .eq('album_id', album.id)
-        .eq('side', side)
-        .eq('event_id', activeEventId);
-  
-      console.log('📬 existingRequests:', existingRequests);
-  
-      if (checkError) {
-        console.error('Error checking for existing requests:', checkError);
-        setRequestStatus({
-          success: false,
-          message: 'Error checking for existing requests'
-        });
-      } else if (existingRequests && existingRequests.length > 0) {
-        // ✅ Match found — update existing request
-        const existingRequest = existingRequests[0];
-  
-        const updatedName = existingRequest.name.includes(name)
-          ? existingRequest.name
-          : `${existingRequest.name}, ${name}`;
-  
-        const { error: updateError } = await supabase
-          .from('requests')
-          .update({
-            votes: existingRequest.votes + 1,
-            name: updatedName
-          })
-          .eq('id', existingRequest.id);
-  
-        if (updateError) {
-          console.error('Error updating request:', updateError);
-          setRequestStatus({
-            success: false,
-            message: 'Error updating request'
-          });
-        } else {
-          setRequestStatus({
-            success: true,
-            message: 'Request upvoted successfully!'
-          });
-          setName('');
-          setSide('A');
-          setExpandedId(null);
-        // Only call parentHandleSubmit if no existing request was found and processed
-        // REMOVE THIS LINE: if (parentHandleSubmit) parentHandleSubmit(album);
-        }
-      } else {
-        // ✅ Defensive guard: ensure data is present before inserting
-        if (!album.id || !side || !activeEventId) {
-          console.warn('❌ Missing critical data for insert. Aborting.', {
-            albumId: album.id,
-            side,
-            eventId: activeEventId
-          });
-          return;
-        }
-  
-        const { error: insertError } = await supabase
-          .from('requests')
-          .insert({
-            artist: album.artist,
-            title: album.title,
-            side,
-            name,
-            status: 'pending',
-            votes: 1,
-            folder: album.folder,
-            year: album.year,
-            format: album.format,
-            album_id: album.id,
-            event_id: activeEventId
-          });
-  
-        if (insertError) {
-          console.error('Error submitting request:', insertError);
-          setRequestStatus({
-            success: false,
-            message: 'Error submitting request'
-          });
-        } else {
-          setRequestStatus({
-            success: true,
-            message: 'Request submitted successfully!'
-          });
-          setName('');
-          setSide('A');
-          setExpandedId(null);
-          // Only call parentHandleSubmit if no existing request was found and processed
-          if (parentHandleSubmit) parentHandleSubmit(album);
-        }
+      setName('');
+      setSide('A');
+      setExpandedId(null);
+      
+      // Only call parent if this was a new request (not an update)
+      if (!wasUpdated && parentHandleSubmit) {
+        parentHandleSubmit(album);
       }
-    } catch (error) {
-      console.error('Error handling request:', error);
+    };
+    
+    const onError = (message) => {
       setRequestStatus({
         success: false,
-        message: 'An error occurred while processing your request'
+        message: message
       });
-    }
+    };
+    
+    await handleAlbumRequest({
+      album,
+      side,
+      name,
+      eventId: activeEventId,
+      onSuccess,
+      onError
+    });
   };
   
 

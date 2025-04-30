@@ -7,6 +7,7 @@ import NowPlayingDisplay from './NowPlayingDisplay';
 import UpNextDisplay from './UpNextDisplay';
 import '../css/EventDisplay.css';
 import { useNavigate } from 'react-router-dom';
+import { handleAlbumRequest } from '../utils/requestUtils';
 
 export default function ExpandedEvent({ event, onBack }) {
   const [requests, setRequests] = useState([]);
@@ -40,76 +41,40 @@ export default function ExpandedEvent({ event, onBack }) {
 
   const handleSubmit = async (album) => {
     const eventId = event?.id;
-    if (!side || !eventId) return;
-
-    const { data: existing, error: fetchError } = await supabase
-      .from('requests')
-      .select('*')
-      .eq('album_id', album.id)
-      .eq('event_id', eventId)
-      .eq('side', side)
-      .limit(1)
-      .single();
-
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      console.error('Error checking for existing request:', fetchError);
-      return;
-    }
-
-    if (existing) {
-      const updatedName = existing.name
-        ? `${existing.name}, ${name || 'Anonymous'}`
-        : (name || 'Anonymous');
-
-      const { error: updateError } = await supabase
-        .from('requests')
-        .update({
-          votes: existing.votes + 1,
-          name: updatedName,
-        })
-        .eq('id', existing.id);
-
-      if (updateError) {
-        console.error('Error updating vote:', updateError);
-        return;
-      }
-
-      setRequests(prev =>
-        prev.map(r =>
-          r.id === existing.id
-            ? { ...r, votes: r.votes + 1, name: updatedName }
-            : r
-        )
-      );
-    } else {
-      const { data: insertData, error: insertError } = await supabase
-        .from('requests')
-        .insert([{
-          album_id: parseInt(album.id, 10),
-          event_id: parseInt(eventId, 10),
-          side,
-          name: name || 'Anonymous',
-          votes: 1,
-          artist: album.artist,
-          title: album.title,
-          status: 'pending',
-          folder: album.folder || 'Unknown'
-        }]);
-
-      if (insertError) {
-        console.error('❌ Insert failed:', insertError);
+    
+    const onSuccess = (message, data, wasUpdated) => {
+      // Update the local requests state
+      if (wasUpdated) {
+        setRequests(prev =>
+          prev.map(r =>
+            r.id === data[0].id
+              ? data[0]
+              : r
+          )
+        );
       } else {
-        console.log('✅ Insert succeeded:', insertData);
+        setRequests(prev => [...prev, data[0]]);
       }
-
-      if (insertData?.length) {
-        setRequests(prev => [...prev, insertData[0]]);
-      }
-    }
-
-    setExpandedId(null);
-    setName('');
-    setSide('A');
+      
+      setExpandedId(null);
+      setName('');
+      setSide('A');
+    };
+    
+    const onError = (message) => {
+      console.error(message);
+      // Optionally show error message to user
+    };
+    
+    await handleAlbumRequest({
+      album,
+      side,
+      name,
+      eventId,
+      onSuccess,
+      onError,
+      skipParentCallback: true // Prevent any duplicate processing
+    });
   };
 
   const voteRequest = async (requestId, delta) => {
