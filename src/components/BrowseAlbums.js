@@ -113,141 +113,122 @@ const BrowseAlbums = ({
     setExpandedId(null);
   };
 
-  // ✅ Enhanced handleSubmit with duplicate detection and proper insert prevention
-const handleSubmit = async (album) => {
-  if (!activeEventId) {
-    setRequestStatus({
-      success: false,
-      message: 'Please select an event first'
-    });
-    return;
-  }
-
-  try {
-    // ✅ Check if this album+side+event already exists in the queue
-    console.log('🧪 Checking for existing request:', {
-      albumId: album.id,
-      side,
-      eventId: activeEventId
-    });
-
-    const { data: existingRequests, error: checkError } = await supabase
-      .from('requests')
-      .select('id, votes, name')
-      .eq('album_id', album.id)
-      .eq('side', side)
-      .eq('event_id', activeEventId);
-
-    console.log('📬 existingRequests:', existingRequests);
-
-    if (checkError) {
-      console.error('Error checking for existing requests:', checkError);
+  const handleSubmit = async (album) => {
+    if (!activeEventId) {
       setRequestStatus({
         success: false,
-        message: 'Error checking for existing requests'
+        message: 'Please select an event first'
       });
       return;
     }
-
-    if (existingRequests && existingRequests.length > 0) {
-      // ✅ Match found — update existing request
-      const existingRequest = existingRequests[0];
-
-      const updatedName = existingRequest.name.includes(name)
-        ? existingRequest.name
-        : `${existingRequest.name}, ${name}`;
-
-      const { error: updateError } = await supabase
-        .from('requests')
-        .update({
-          votes: existingRequest.votes + 1,
-          name: updatedName
-        })
-        .eq('id', existingRequest.id);
-
-      if (updateError) {
-        console.error('Error updating request:', updateError);
-        setRequestStatus({
-          success: false,
-          message: 'Error updating request'
-        });
-        return;
-      }
-
-      setRequestStatus({
-        success: true,
-        message: 'Request upvoted successfully!'
-      });
-
-      // ✅ Reset form and close card only after successful update
-      setName('');
-      setSide('A');
-      setExpandedId(null);
-
-      if (parentHandleSubmit) {
-        parentHandleSubmit(album);
-      }
-
-      return; // ✅ Prevent insert logic from running
-    }
-
-    // ✅ Defensive guard: ensure data is present before inserting
-    if (!album.id || !side || !activeEventId) {
-      console.warn('❌ Missing critical data for insert. Aborting.', {
+  
+    try {
+      console.log('🧪 Checking for existing request:', {
         albumId: album.id,
         side,
         eventId: activeEventId
       });
-      return;
-    }
-
-    // ✅ No match found — create new request
-    const { error: insertError } = await supabase
-      .from('requests')
-      .insert({
-        artist: album.artist,
-        title: album.title,
-        side,
-        name,
-        status: 'pending',
-        votes: 1,
-        folder: album.folder,
-        year: album.year,
-        format: album.format,
-        album_id: album.id,
-        event_id: activeEventId
-      });
-
-    if (insertError) {
-      console.error('Error submitting request:', insertError);
+  
+      const { data: existingRequests, error: checkError } = await supabase
+        .from('requests')
+        .select('id, votes, name')
+        .eq('album_id', album.id)
+        .eq('side', side)
+        .eq('event_id', activeEventId);
+  
+      console.log('📬 existingRequests:', existingRequests);
+  
+      if (checkError) {
+        console.error('Error checking for existing requests:', checkError);
+        setRequestStatus({
+          success: false,
+          message: 'Error checking for existing requests'
+        });
+      } else if (existingRequests && existingRequests.length > 0) {
+        // ✅ Match found — update existing request
+        const existingRequest = existingRequests[0];
+  
+        const updatedName = existingRequest.name.includes(name)
+          ? existingRequest.name
+          : `${existingRequest.name}, ${name}`;
+  
+        const { error: updateError } = await supabase
+          .from('requests')
+          .update({
+            votes: existingRequest.votes + 1,
+            name: updatedName
+          })
+          .eq('id', existingRequest.id);
+  
+        if (updateError) {
+          console.error('Error updating request:', updateError);
+          setRequestStatus({
+            success: false,
+            message: 'Error updating request'
+          });
+        } else {
+          setRequestStatus({
+            success: true,
+            message: 'Request upvoted successfully!'
+          });
+          setName('');
+          setSide('A');
+          setExpandedId(null);
+          if (parentHandleSubmit) parentHandleSubmit(album);
+        }
+      } else {
+        // ✅ Defensive guard: ensure data is present before inserting
+        if (!album.id || !side || !activeEventId) {
+          console.warn('❌ Missing critical data for insert. Aborting.', {
+            albumId: album.id,
+            side,
+            eventId: activeEventId
+          });
+          return;
+        }
+  
+        const { error: insertError } = await supabase
+          .from('requests')
+          .insert({
+            artist: album.artist,
+            title: album.title,
+            side,
+            name,
+            status: 'pending',
+            votes: 1,
+            folder: album.folder,
+            year: album.year,
+            format: album.format,
+            album_id: album.id,
+            event_id: activeEventId
+          });
+  
+        if (insertError) {
+          console.error('Error submitting request:', insertError);
+          setRequestStatus({
+            success: false,
+            message: 'Error submitting request'
+          });
+        } else {
+          setRequestStatus({
+            success: true,
+            message: 'Request submitted successfully!'
+          });
+          setName('');
+          setSide('A');
+          setExpandedId(null);
+          if (parentHandleSubmit) parentHandleSubmit(album);
+        }
+      }
+    } catch (error) {
+      console.error('Error handling request:', error);
       setRequestStatus({
         success: false,
-        message: 'Error submitting request'
+        message: 'An error occurred while processing your request'
       });
-      return;
     }
-
-    setRequestStatus({
-      success: true,
-      message: 'Request submitted successfully!'
-    });
-
-    // ✅ Reset form and close card only after successful insert
-    setName('');
-    setSide('A');
-    setExpandedId(null);
-
-    if (parentHandleSubmit) {
-      parentHandleSubmit(album);
-    }
-  } catch (error) {
-    console.error('Error handling request:', error);
-    setRequestStatus({
-      success: false,
-      message: 'An error occurred while processing your request'
-    });
-  }
-};
+  };
+  
 
 
   // ✅ Render component
