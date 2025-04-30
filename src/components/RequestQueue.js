@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import '../css/RequestQueue.css';
-import ExpandableAlbumCard from './ExpandableAlbumCard';
+import ExpandableAlbumRequestCard from './ExpandableAlbumRequestCard';
 
 const RequestQueue = ({
   requests = [],
@@ -208,9 +208,9 @@ const RequestQueue = ({
         </div>
       )}
       
-      {/* Using ExpandableAlbumCard for expanded view instead of inline expansion */}
+      {/* Using ExpandableAlbumRequestCard for expanded view instead of inline expansion */}
       {expandedId && albumData[expandedId] && (
-        <ExpandableAlbumCard
+        <ExpandableAlbumRequestCard
           album={albumData[expandedId]}
           onClose={handleCloseExpandedCard}
           selectedSide={requests.find(r => r.id === expandedId)?.side}
