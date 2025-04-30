@@ -5,7 +5,8 @@ import '../css/EventDisplay.css';
 /**
  * Scrollable list of all upcoming events.
  * Highlights the selected one and updates activeEventId on click.
- * Now includes instructive text and better date formatting.
+ * Now includes instructive text, better date formatting,
+ * and more elegant next event highlighting.
  */
 export default function EventCarousel({ events, activeEventId, setActiveEventId }) {
   // Find the next upcoming event (first event whose date is >= today)
@@ -46,11 +47,15 @@ export default function EventCarousel({ events, activeEventId, setActiveEventId 
             className={`event-card ${evt.id === activeEventId ? 'active' : ''} ${evt.id === nextEventId ? 'next-event' : ''}`}
             onClick={() => setActiveEventId(evt.id)}
           >
+            {evt.id === nextEventId && (
+              <div className="next-event-label">
+                <span>Next Event</span>
+              </div>
+            )}
             <strong>{formatDate(evt.date)}</strong><br />
             <span>{evt.time}</span><br />
             <div>{evt.title}</div>
             <small>{evt.info}</small>
-            {evt.id === nextEventId && <div className="next-event-badge">Next Event</div>}
           </div>
         ))}
       </div>
