@@ -1,138 +1,37 @@
 /* RequestQueue.css */
 .request-queue {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
-.queue-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.queue-item {
-  margin-bottom: 15px;
+.request-item {
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: white;
   overflow: hidden;
+  background: white;
 }
 
-.queue-item-content {
-  display: flex;
-  padding: 15px;
-  align-items: center;
-}
-
-/* Album image styling */
-.album-image-container {
-  width: 120px;
-  margin-right: 20px;
-  text-align: center;
-}
-
-.album-cover {
-  width: 100%;
-  height: auto;
-  border-radius: 4px;
-  display: block;
-}
-
-.album-placeholder {
-  width: 100%;
-  height: 0;
-  padding-bottom: 100%;
-  background-color: black;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 5px;
-  font-size: 0.9em;
-  border-radius: 4px;
-}
-
-.album-info {
-  margin-top: 8px;
-  font-size: 0.85em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.side-info {
-  font-size: 0.8em;
-  color: #666;
-}
-
-/* Request details styling */
-.request-details {
-  flex: 1;
-  margin-right: 20px;
-}
-
-.votes-section {
-  display: flex;
-  align-items: center;
-  margin-top: 8px;
-}
-
-.vote-count {
-  font-weight: bold;
-  margin-right: 10px;
-}
-
-.vote-button {
-  background: none;
-  border: none;
-  font-size: 1.2em;
+.album-card {
+  padding: 12px;
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.vote-button:hover {
-  background-color: #f0f0f0;
+.album-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Album expand button */
-.album-expand {
-  margin-right: 15px;
-}
-
-.expand-button {
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 0.9em;
-  cursor: pointer;
-}
-
-.expand-button:hover {
-  background-color: #e0e0e0;
-}
-
-/* Admin controls */
-.admin-controls {
-  display: flex;
-  gap: 5px;
-}
-
-.admin-controls button {
-  background: none;
-  border: none;
-  font-size: 1.2em;
-  cursor: pointer;
-  padding: 5px;
-}
-
-/* Now Playing and Up Next */
 .now-playing,
 .up-next {
-  padding: 15px;
   margin-bottom: 20px;
-  background-color: #f8f8f8;
+  padding: 15px;
+  background: #f8f8f8;
   border-radius: 8px;
 }
 
@@ -150,91 +49,7 @@
   margin-bottom: 10px;
 }
 
-/* Expanded album details */
-.expanded-album-details {
-  border-top: 1px solid #eee;
-  padding: 15px;
-  background-color: #f9f9f9;
-}
-
-.expanded-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.expanded-card-header h2 {
-  margin: 0;
-  font-size: 1.3em;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5em;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.expanded-card-content {
-  display: flex;
-  gap: 30px;
-}
-
-.album-image {
-  flex: 1;
-  max-width: 300px;
-}
-
-.album-image img {
-  width: 100%;
-  border-radius: 4px;
-}
-
-.album-details {
-  flex: 2;
-}
-
-.side-selector {
-  margin-bottom: 20px;
-}
-
-.track-list ol {
-  padding-left: 20px;
-}
-
-.no-tracks-message {
-  color: #666;
-  font-style: italic;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .queue-item-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .album-image-container {
-    width: 100%;
-    max-width: 180px;
-    margin-right: 0;
-    margin-bottom: 15px;
-  }
-  
-  .request-details {
-    margin-right: 0;
-    margin-bottom: 15px;
-    width: 100%;
-  }
-  
-  .expanded-card-content {
-    flex-direction: column;
-  }
-  
-  .album-image {
-    max-width: 100%;
-    margin-bottom: 20px;
-  }
+/* Hide the request form in ExpandableAlbumCard when used in RequestQueue */
+.expanded-album-container .request-form {
+  display: none;
 }

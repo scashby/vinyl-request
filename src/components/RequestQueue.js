@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../css/RequestQueue.css';
+import ExpandableAlbumCard from './ExpandableAlbumCard'; // Import your existing component
 
 const RequestQueue = ({
   requests = [],
@@ -24,10 +25,10 @@ const RequestQueue = ({
       return `${requesters[0]} and ${requesters.length - 1} others`;
     }
   };
-  
-  // Handle click on a request to expand it
-  const handleRequestClick = (requestId) => {
-    setExpandedId(expandedId === requestId ? null : requestId);
+
+  // Handle album click to expand details
+  const handleAlbumClick = (requestId) => {
+    setExpandedId(requestId === expandedId ? null : requestId);
   };
 
   return (
@@ -55,119 +56,162 @@ const RequestQueue = ({
       {requests.length === 0 ? (
         <p>No requests yet.</p>
       ) : (
-        <ul className="queue-list">
+        <div className="requests-list">
           {requests.map((request) => (
-            <li key={request.id} className="queue-item">
-              <div className="queue-item-content">
-                {/* Album image/cover */}
-                <div className="album-image-container">
+            <div className="request-item" key={request.id}>
+              <div
+                className={`album-card ${expandedId === request.id ? 'expanded' : ''}`}
+                onClick={() => handleAlbumClick(request.id)}
+              >
+                <div style={{ position: 'relative', width: '100%', height: '150px' }}>
                   {request.image_url && request.image_url !== 'no' ? (
                     <img
                       src={request.image_url}
                       alt={`${request.artist} - ${request.title}`}
-                      className="album-cover"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                      onError={(e) => {
+                        console.error('Image load failed for:', request.artist, request.title);
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                        const fallback = e.target.nextElementSibling;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
                     />
-                  ) : (
-                    <div className="album-placeholder">
-                      {request.artist} – {request.title}
-                    </div>
-                  )}
-                  <div className="album-info">
+                  ) : null}
+
+                  {/* Placeholder black box if no image */}
+                  <div
+                    className="album-placeholder"
+                    style={{
+                      display: (!request.image_url || request.image_url === 'no') ? 'flex' : 'none',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: 'black',
+                      color: 'white',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      padding: '5px',
+                      fontSize: '0.9em',
+                    }}
+                  >
                     {request.artist} – {request.title}
                   </div>
-                  <div className="side-info">Side {request.side}</div>
+                </div>
+
+                {/* Album info under image/placeholder */}
+                <div
+                  className="album-info-text"
+                  style={{ marginTop: '5px', textAlign: 'center', fontSize: '0.85em' }}
+                >
+                  {request.artist} – {request.title}
+                </div>
+                
+                {/* Side info */}
+                <div
+                  className="side-info"
+                  style={{ textAlign: 'center', fontSize: '0.8em', color: '#666' }}
+                >
+                  Side {request.side}
                 </div>
                 
                 {/* Request details */}
-                <div className="request-details">
-                  <div>Requested by {formatRequesters(request.name)}</div>
-                  <div className="votes-section">
-                    <span className="vote-count">{request.votes} votes</span>
+                <div className="request-info" style={{ marginTop: '8px', padding: '0 5px' }}>
+                  <div className="requested-by" style={{ fontSize: '0.85em' }}>
+                    Requested by {formatRequesters(request.name)}
+                  </div>
+                  
+                  <div className="votes-section" style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    marginTop: '5px' 
+                  }}>
+                    <span className="vote-count" style={{ fontWeight: 'bold' }}>
+                      {request.votes} votes
+                    </span>
+                    
                     {!adminMode && (
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           voteRequest(request.id, 1);
                         }}
-                        className="vote-button"
                         title="Click to upvote"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: '1.2em',
+                          cursor: 'pointer',
+                          padding: '2px 6px',
+                        }}
                       >
                         👍
                       </button>
                     )}
                   </div>
                 </div>
-                
-                {/* Show album details button */}
-                <div className="album-expand">
-                  <button 
-                    className="expand-button"
-                    onClick={() => handleRequestClick(request.id)}
-                  >
-                    {expandedId === request.id ? 'Hide Details' : 'Show Details'}
-                  </button>
-                </div>
-                
-                {/* Admin controls if needed */}
+
+                {/* Admin buttons if needed */}
                 {adminMode && (
-                  <div className="admin-controls">
-                    <button onClick={() => markNowPlaying(request.id)}>▶️</button>
-                    <button onClick={() => markPlayed(request.id)}>✅</button>
-                    <button onClick={() => deleteRequest(request.id)}>🗑</button>
+                  <div className="admin-buttons" style={{ 
+                    marginTop: '10px', 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    gap: '10px'
+                  }}>
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        markNowPlaying(request.id); 
+                      }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      ▶️
+                    </button>
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        markPlayed(request.id); 
+                      }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      ✅
+                    </button>
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        deleteRequest(request.id); 
+                      }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      🗑
+                    </button>
                   </div>
                 )}
               </div>
-              
-              {/* Expanded album details */}
-              {expandedId === request.id && (
-                <div className="expanded-album-details">
-                  <div className="expanded-album-card">
-                    <div className="expanded-card-header">
-                      <h2>{request.artist} - {request.title}</h2>
-                      <button className="close-button" onClick={() => setExpandedId(null)}>×</button>
-                    </div>
-                    <div className="expanded-card-content">
-                      <div className="album-image">
-                        {request.image_url && request.image_url !== 'no' ? (
-                          <img 
-                            src={request.image_url} 
-                            alt={`${request.artist} - ${request.title}`}
-                          />
-                        ) : (
-                          <div className="album-placeholder">
-                            {request.artist} - {request.title}
-                          </div>
-                        )}
-                      </div>
-                      <div className="album-details">
-                        <p>{request.year} • {request.format} • {request.folder}</p>
-                        
-                        <div className="side-selector">
-                          <h4>Side {request.side}</h4>
-                        </div>
-                        
-                        {request.tracks && request.tracks.length > 0 ? (
-                          <div className="track-list">
-                            <h4>Tracks:</h4>
-                            <ol>
-                              {request.tracks.map((track, idx) => (
-                                <li key={idx}>{track}</li>
-                              ))}
-                            </ol>
-                          </div>
-                        ) : (
-                          <div className="no-tracks-message">
-                            No tracks available for Side {request.side}.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
+      )}
+      
+      {/* Using your existing ExpandableAlbumCard but with modifications */}
+      {expandedId && (
+        <div className="expanded-album-container">
+          <ExpandableAlbumCard
+            album={requests.find(req => req.id === expandedId)}
+            onClose={() => setExpandedId(null)}
+            selectedSide={requests.find(req => req.id === expandedId)?.side}
+            readOnly={true} // Add this prop to your component to hide the request form
+          />
+        </div>
       )}
     </section>
   );
