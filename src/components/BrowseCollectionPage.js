@@ -1,7 +1,9 @@
+// In BrowseCollectionPage.js
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import BrowseAlbums from './BrowseAlbums';
 import { supabase } from '../supabaseClient';
+import { handleAlbumRequest } from '../utils/requestUtils';
 
 const BrowseCollectionPage = () => {
   const { eventId } = useParams();
@@ -10,34 +12,42 @@ const BrowseCollectionPage = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [side, setSide] = useState('A');
   const [name, setName] = useState('');
+  const [statusMessage, setStatusMessage] = useState(null);
 
   const handleSubmit = async (album) => {
     if (!side || !eventId) return;
 
-    const newRequest = {
-      album_id: parseInt(album.id, 10),
-      event_id: parseInt(eventId, 10),
-      side,
-      name: name || 'Anonymous',
-      votes: 1,
-      artist: album.artist,
-      title: album.title,
-      status: 'pending',
-      folder: album.folder || 'Unknown',
-      timestamp: new Date().toISOString(),
+    const onSuccess = (message, data, wasUpdated) => {
+      setStatusMessage({
+        type: 'success',
+        text: message
+      });
+      setExpandedId(null);
+      setName('');
+      setSide('A');
+      
+      // Optional: Add a timeout to clear the status message
+      setTimeout(() => setStatusMessage(null), 3000);
     };
-
-    const { data, error } = await supabase.from('requests').insert([newRequest]);
-
-    if (error) {
-      console.error('❌ Insert failed:', error);
-    } else {
-      console.log('✅ Insert succeeded:', data);
-    }
-
-    setExpandedId(null);
-    setName('');
-    setSide('A');
+    
+    const onError = (message) => {
+      setStatusMessage({
+        type: 'error',
+        text: message
+      });
+      
+      // Optional: Add a timeout to clear the error message
+      setTimeout(() => setStatusMessage(null), 3000);
+    };
+    
+    await handleAlbumRequest({
+      album,
+      side,
+      name,
+      eventId: parseInt(eventId, 10),
+      onSuccess,
+      onError
+    });
   };
 
   return (
@@ -46,6 +56,12 @@ const BrowseCollectionPage = () => {
         <h2>Browse Our Collection</h2>
         <button onClick={() => navigate(-1)}>⬅ Return to Event</button>
       </div>
+      
+      {statusMessage && (
+        <div className={`status-message ${statusMessage.type}`}>
+          {statusMessage.text}
+        </div>
+      )}
 
       <BrowseAlbums
         activeEventId={eventId}
