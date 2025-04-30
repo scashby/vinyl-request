@@ -114,74 +114,81 @@ const BrowseAlbums = ({
   };
 
   // ✅ Enhanced handleSubmit with duplicate detection and proper insert prevention
-  const handleSubmit = async (album) => {
-    if (!activeEventId) {
-      setRequestStatus({
-        success: false,
-        message: 'Please select an event first'
-      });
-      return;
-    }
-
-    try {
-      // ✅ Check if this album+side+event already exists in the queue
-      const { data: existingRequests, error: checkError } = await supabase
-        .from('requests')
-        .select('id, votes, name')
-        .eq('album_id', album.id)
-        .eq('side', side)
-        .eq('event_id', activeEventId);
-
-      if (checkError) {
-        console.error('Error checking for existing requests:', checkError);
+    const handleSubmit = async (album) => {
+      if (!activeEventId) {
         setRequestStatus({
           success: false,
-          message: 'Error checking for existing requests'
+          message: 'Please select an event first'
         });
         return;
       }
 
-      if (existingRequests && existingRequests.length > 0) {
-        // ✅ Match found — update existing request
-        const existingRequest = existingRequests[0];
+      try {
+        // ✅ Check if this album+side+event already exists in the queue
+        console.log('🧪 SELECT request match using:', {
+          albumId: album.id,
+          side,
+          eventId: activeEventId
+        });
 
-        const updatedName = existingRequest.name.includes(name)
-          ? existingRequest.name
-          : `${existingRequest.name}, ${name}`;
-
-        const { error: updateError } = await supabase
+        const { data: existingRequests, error: checkError } = await supabase
           .from('requests')
-          .update({
-            votes: existingRequest.votes + 1,
-            name: updatedName
-          })
-          .eq('id', existingRequest.id);
+          .select('id, votes, name')
+          .eq('album_id', album.id)
+          .eq('side', side)
+          .eq('event_id', activeEventId);
 
-        if (updateError) {
-          console.error('Error updating request:', updateError);
+        if (checkError) {
+          console.error('Error checking for existing requests:', checkError);
           setRequestStatus({
             success: false,
-            message: 'Error updating request'
+            message: 'Error checking for existing requests'
           });
           return;
         }
 
-        setRequestStatus({
-          success: true,
-          message: 'Request upvoted successfully!'
-        });
+        if (existingRequests && existingRequests.length > 0) {
+          // ✅ Match found — update existing request
+          const existingRequest = existingRequests[0];
 
-        // 🛠 Moved state reset above return to prevent insert fallback
-        setName('');
-        setExpandedId(null);
-        setSide('A');
+          const updatedName = existingRequest.name.includes(name)
+            ? existingRequest.name
+            : `${existingRequest.name}, ${name}`;
 
-        if (parentHandleSubmit) {
-          parentHandleSubmit(album);
+          const { error: updateError } = await supabase
+            .from('requests')
+            .update({
+              votes: existingRequest.votes + 1,
+              name: updatedName
+            })
+            .eq('id', existingRequest.id);
+
+          if (updateError) {
+            console.error('Error updating request:', updateError);
+            setRequestStatus({
+              success: false,
+              message: 'Error updating request'
+            });
+            return;
+          }
+
+          setRequestStatus({
+            success: true,
+            message: 'Request upvoted successfully!'
+          });
+
+          return; // ✅ Immediate return — prevents insert from running
         }
 
-        return; // ✅ Prevent fallback insert after update
-      }
+        // ✅ Defensive guard: ensure data is present before inserting
+        if (!album.id || !side || !activeEventId) {
+          console.warn('❌ Missing critical data for insert. Aborting.', {
+            albumId: album.id,
+            side,
+            eventId: activeEventId
+          });
+          return;
+        }
 
       // ✅ No match found — create new request
       const { error: insertError } = await supabase
@@ -214,6 +221,7 @@ const BrowseAlbums = ({
         message: 'Request submitted successfully!'
       });
 
+      // ✅ Reset form state after successful insert
       setName('');
       setExpandedId(null);
       setSide('A');
