@@ -138,9 +138,10 @@ const BrowseAlbums = ({
         const { data: existingRequests, error: checkError } = await supabase
           .from('requests')
           .select('id, votes, name')
-          .eq('album_id', album.id)
-          .eq('side', side)
-          .eq('event_id', activeEventId);
+          .eq('album_id', parseInt(album.id, 10))
+          .eq('side', side.toUpperCase()) // Normalize to uppercase
+          .eq('event_id', parseInt(activeEventId, 10))
+
 
         if (checkError) {
           console.error('Error checking for existing requests:', checkError);
@@ -348,7 +349,7 @@ const BrowseAlbums = ({
               {/* ✅ Legacy request form if needed (consider removing after full migration) */}
               {expandedId === album.id && !currentEvent && (
                 <div className="request-form">
-                  <select value={side} onChange={(e) => setSide(e.target.value)}>
+                  <select value={side} onChange={(e) => setSide(e.target.value.toUpperCase())}>
                     {['A', 'B', 'C', 'D', 'E', 'F'].map((s) => (
                       <option key={s} value={s}>
                         Side {s}
