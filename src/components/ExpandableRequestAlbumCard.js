@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import SideSelector from 'components/SideSelector';
 import TrackList from 'components/TrackList';
-import 'css/ExpandableRequestAlbumCard.css';
+import 'css/expandableRequestAlbumCard.css';
 
 // ✅ ExpandableRequestAlbumCard component
 const ExpandableRequestAlbumCard = ({ 
