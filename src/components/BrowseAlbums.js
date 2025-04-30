@@ -177,17 +177,19 @@ const BrowseAlbums = ({
             message: 'Request upvoted successfully!'
           });
         
-          // ✅ Reset form state and close expanded card after upvote
-          setName('');
-          setSide('A');
-          setExpandedId(null);
+          // ✅ Reset and forcibly exit handleSubmit by breaking execution chain
+          setTimeout(() => {
+            setName('');
+            setSide('A');
+            setExpandedId(null);
+            if (parentHandleSubmit) {
+              parentHandleSubmit(album);
+            }
+          }, 0);
         
-          if (parentHandleSubmit) {
-            parentHandleSubmit(album);
-          }
-        
-          return;
-        }
+          // ❌ Do NOT proceed to insert
+          throw new Error('Upvote complete — abort insert');
+        }        
         
 
         // ✅ Defensive guard: ensure data is present before inserting
