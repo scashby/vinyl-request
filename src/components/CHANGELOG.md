@@ -106,6 +106,7 @@
 - Search bar and filter bar both working as intended.
 - Album grid renders even without image assets using fallback placeholders.
 - Git workflow improved with custom aliases and version tagging.
+- Fixed request duplication issue.
 
 ---
 
