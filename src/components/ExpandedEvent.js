@@ -127,7 +127,10 @@ export default function ExpandedEvent({ event, onBack }) {
           {upNext && <UpNextDisplay upNext={upNext} />}
         </>
       )}
-
+      <button onClick={() => navigate(`/browse/${event.id}`)} className="browse-button">
+        🎧 Browse the collection and add your pick
+      </button>
+      
       <RequestQueue
         requests={requests}
         setRequests={setRequests}
