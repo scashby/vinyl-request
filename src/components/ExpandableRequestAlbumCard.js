@@ -134,7 +134,7 @@ const ExpandableRequestAlbumCard = ({
                 />
               )}
 
-              {/* ✅ Request form integrated with existing structure */}
+              {/* ✅ Request form integrated with existing structure 
               <div className="request-form">
                 <h3>Request for {currentEvent?.title || 'Event'}</h3>
                 
@@ -174,7 +174,7 @@ const ExpandableRequestAlbumCard = ({
                     </button>
                   </form>
                 )}
-              </div>
+              </div>*/}
             </>
           ) : (
             <div className="no-data-message">
