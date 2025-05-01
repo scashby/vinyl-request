@@ -88,20 +88,17 @@ const ExpandableRequestAlbumCard = ({
             <div className="error-message">{error}</div>
           ) : sidesData ? (
             <>
-              {/* Display selected side instead of side selector */}
-              <div className="selected-side">
-                <h3>Side {selectedSide}</h3>
-                <div className="side-indicator" style={{
-                  display: 'inline-block',
-                  padding: '6px 12px',
-                  background: '#1e88e5',
-                  color: 'white',
-                  borderRadius: '4px',
-                  fontWeight: 'bold',
-                  marginBottom: '16px'
-                }}>
-                  Requested Side
-                </div>
+              {/* Just the side button without any heading */}
+              <div className="side-indicator" style={{
+                display: 'inline-block',
+                padding: '8px 16px',
+                background: '#1e88e5',
+                color: 'white',
+                borderRadius: '4px',
+                fontWeight: 'bold',
+                marginBottom: '20px'
+              }}>
+                Side {selectedSide}
               </div>
               
               {selectedSide && (
