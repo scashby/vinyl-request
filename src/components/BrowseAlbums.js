@@ -123,11 +123,6 @@ const BrowseAlbums = ({
       setName('');
       setSide('A');
       setExpandedId(null);
-      
-      // Only call parent if this was a new request (not an update)
-      if (!wasUpdated && parentHandleSubmit) {
-        parentHandleSubmit(album);
-      }
     };
     
     const onError = (message) => {
