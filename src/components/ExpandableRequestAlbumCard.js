@@ -1,25 +1,18 @@
 // ✅ Imports
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import SideSelector from 'components/SideSelector';
 import TrackList from 'components/TrackList';
 import 'css/expandableRequestAlbumCard.css';
 
 // ✅ ExpandableRequestAlbumCard component
 const ExpandableRequestAlbumCard = ({ 
   album, 
-  currentEvent, 
   onClose,
-  onSideSelect,
-  selectedSide,
-  onNameChange,
-  name,
-  onSubmit
+  selectedSide
 }) => {
   const [sidesData, setSidesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState('');
 
   // ✅ Fetch side data if not already present in the album object
   useEffect(() => {
@@ -65,32 +58,6 @@ const ExpandableRequestAlbumCard = ({
     fetchSideData();
   }, [album]);
 
-  // ✅ Handle side selection
-  const handleSideSelect = (side) => {
-    onSideSelect(side);
-  };
-
-  // ✅ Check if the event queue is locked (24 hours before event)
-  const isQueueLocked = () => {
-    if (!currentEvent || !currentEvent.date) return false;
-    
-    const eventDate = new Date(currentEvent.date);
-    const eventTime = currentEvent.time ? currentEvent.time.split(':') : ['00', '00'];
-    eventDate.setHours(parseInt(eventTime[0]), parseInt(eventTime[1]), 0, 0);
-    
-    const lockTime = new Date(eventDate);
-    lockTime.setHours(lockTime.getHours() - 24);
-    
-    return new Date() >= lockTime;
-  };
-
-  // ✅ Handle submit
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      onSubmit(album); // ✅ Let parent decide when to close
-    };
-
-
   // ✅ Render component
   return (
     <div className="expanded-album-card">
@@ -121,11 +88,21 @@ const ExpandableRequestAlbumCard = ({
             <div className="error-message">{error}</div>
           ) : sidesData ? (
             <>
-              <SideSelector 
-                sides={Object.keys(sidesData)} 
-                selectedSide={selectedSide}
-                onSelectSide={handleSideSelect}
-              />
+              {/* Display selected side instead of side selector */}
+              <div className="selected-side">
+                <h3>Side {selectedSide}</h3>
+                <div className="side-indicator" style={{
+                  display: 'inline-block',
+                  padding: '6px 12px',
+                  background: '#1e88e5',
+                  color: 'white',
+                  borderRadius: '4px',
+                  fontWeight: 'bold',
+                  marginBottom: '16px'
+                }}>
+                  Requested Side
+                </div>
+              </div>
               
               {selectedSide && (
                 <TrackList 
@@ -133,48 +110,6 @@ const ExpandableRequestAlbumCard = ({
                   side={selectedSide}
                 />
               )}
-
-              {/* ✅ Request form integrated with existing structure 
-              <div className="request-form">
-                <h3>Request for {currentEvent?.title || 'Event'}</h3>
-                
-                {isQueueLocked() ? (
-                  <div className="queue-locked-message">
-                    <p>Queue is locked. Requests for this event are no longer accepted.</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                      <label htmlFor="name">Your name:</label>
-                      <input
-                        type="text"
-                        id="name"
-                        value={name}
-                        onChange={(e) => onNameChange(e.target.value)}
-                        placeholder="Your name"
-                      />
-                    </div>
-                    
-                    <div className="form-group">
-                      <label htmlFor="message">Message (optional):</label>
-                      <textarea
-                        id="message"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Add a note to your request"
-                      />
-                    </div>
-                    
-                    <button 
-                      type="submit" 
-                      disabled={!selectedSide || !currentEvent}
-                      className="request-button"
-                    >
-                      Request Side {selectedSide}
-                    </button>
-                  </form>
-                )}
-              </div>*/}
             </>
           ) : (
             <div className="no-data-message">
