@@ -100,19 +100,38 @@
 
 ---
 
-# ✅ Status as of 2025-04-29
+## 2025-04-30
+
+### ✅ Request Queue Functionality Fixes
+- Fixed duplicate votes issue in request submission process.
+- Updated RequestQueue component to correctly fetch album artwork from Supabase collection table.
+- Created dedicated ExpandableRequestAlbumCard component for view-only album details.
+- Improved request display in queue with proper formatting.
+- Fixed BrowseAlbums component to prevent duplicate processing of album requests.
+
+### ✅ UI/UX Improvements
+- Added clear visual indication of which side was requested in ExpandableRequestAlbumCard.
+- Improved display of requester information to handle multiple requesters.
+- Enhanced Request Queue with cleaner layout for improved readability.
+
+---
+
+# ✅ Status as of 2025-04-30
 
 - Album browsing fully restored and filtered by artist, title, and folder (Vinyl, Cassette, 45s).
 - Search bar and filter bar both working as intended.
 - Album grid renders even without image assets using fallback placeholders.
+- Request Queue displays correctly with album artwork from Supabase.
+- Fixed request duplication issue that was causing double votes.
+- Improved album detail view for requested tracks.
 - Git workflow improved with custom aliases and version tagging.
-- Fixed request duplication issue.
 
 ---
 
 # 📋 Next Steps (planned)
 
-- Reintroduce track side selection (A–F) from external source with Discogs fallback.
+- Import tracklists from outside sources like Discogs API or MusicBrainz to populate album side information.
+- Reintroduce track side selection (A–F) with proper data fetching and error handling.
 - Add support for customer vinyl override queue entries with admin mode.
 - Replace expired Discogs token or switch to alternate metadata source.
 - Begin editable tracklist integration for album sides and request form context.
