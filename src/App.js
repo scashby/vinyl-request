@@ -16,7 +16,7 @@ import ReturnToHome from 'admin/ReturnToHome';
 import LogoutAdmin from 'admin/LogoutAdmin';
 import BrowseCollectionPage from 'components/BrowseCollectionPage';
 import BackfillMissingData from 'admin/BackfillMissingData';
-
+import ImportDiscogs from './admin/ImportDiscogs';
 import 'css/App.css';
 
 function App() {
@@ -76,6 +76,7 @@ function App() {
         />
 
 <Routes>
+  <Route path="/admin/import-discogs" element={<ImportDiscogs />} />
   <Route
     path="/"
     element={

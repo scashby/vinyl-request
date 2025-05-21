@@ -15,6 +15,7 @@ const AdminPanel = () => {
           <li><Link to="/admin/replace-track-listings">Add or Replace Sides or Track Listings</Link></li>
           <li><Link to="/admin/return-home">Return to Home</Link></li>
           <li><Link to="/admin/logout">Log out of Admin</Link></li>
+          <li><Link to="/admin/import-discogs">Import or Update Collection</Link></li>
         </ul>
       </nav>
 

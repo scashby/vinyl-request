@@ -135,3 +135,16 @@
 - Add support for customer vinyl override queue entries with admin mode.
 - Replace expired Discogs token or switch to alternate metadata source.
 - Begin editable tracklist integration for album sides and request form context.
+
+### Added
+- Created `src/admin/ImportDiscogs.js`: A new admin UI page to import and sync your Discogs collection.
+- Added React Router route at `/admin/import-discogs` via `App.js`.
+- Updated `AdminPanel.js` menu with link to the import tool.
+- Implemented `parseDiscogsCSV` in `src/lib/discogs/parseCollection.js` to normalize CSV exports.
+- Built `enrichDiscogsRelease` in `src/lib/discogs/enrichRelease.js` to fetch album art and track listings from the Discogs API, with fallback support.
+- Added `syncDiscogsToSupabase` in `src/lib/discogs/syncToSupabase.js` to upsert new or changed records into Supabase.
+- Standardized Discogs token and Supabase config using `src/lib/constants.js`.
+
+### Notes
+- This feature enables fully automated cleanup and enrichment of your collection from Discogs, with minimal manual review.
+- Route is accessible via `/admin/import-discogs`.
