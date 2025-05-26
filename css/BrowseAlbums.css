@@ -1,0 +1,83 @@
+.browse-albums {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .browse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .search-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  
+  .album-card {
+    background: #f8f8f8;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    text-align: center;
+    overflow: hidden;
+    border: 1px solid #ccc;
+  }
+  
+  .album-card:hover {
+    transform: scale(1.02);
+  }
+  
+  .album-image {
+    width: 100%;
+    height: auto;
+  }
+  
+  .album-placeholder {
+    height: 200px;
+    background: #333;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    padding: 1rem;
+  }
+  .sides-listing {
+    margin-bottom: 10px;
+  }
+  
+  .sides-listing strong {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.1em;
+  }
+  
+  .sides-listing ul {
+    margin: 5px 0 10px 20px;
+    padding: 0;
+    list-style-type: disc;
+  }
+  
+  .sides-listing li {
+    margin: 2px 0;
+  }
+  
