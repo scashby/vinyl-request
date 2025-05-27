@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import '../css/BrowseAlbums.css';
-import './FilterBar';
+import FilterBar from './FilterBar';
 import ExpandableAlbumCard from './ExpandableAlbumCard';
 import '../css/expandableAlbumCard.css';
 import { handleAlbumRequest } from '../utils/requestUtils';
