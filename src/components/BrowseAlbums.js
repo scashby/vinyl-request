@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import '../css/BrowseAlbums.css';
-import FilterBar from 'components/FilterBar';
-import ExpandableAlbumCard from 'components/ExpandableAlbumCard';
-import '../css//expandableAlbumCard.css';
+import './FilterBar';
+import ExpandableAlbumCard from './ExpandableAlbumCard';
+import '../css/expandableAlbumCard.css';
 import { handleAlbumRequest } from '../utils/requestUtils';
 
 // ✅ BrowseAlbums component
