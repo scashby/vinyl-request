@@ -1,9 +1,9 @@
 // ✅ Imports
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import SideSelector from './components/SideSelector';
+import SideSelector from './SideSelector';
 import TrackList from './components/TrackList';
-import '../css//expandableAlbumCard.css';
+import '../css/expandableAlbumCard.css';
 
 // ✅ ExpandableAlbumCard component
 const ExpandableAlbumCard = ({ 
