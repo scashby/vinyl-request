@@ -1,0 +1,27 @@
+
+.event-display-wrapper {
+  padding: 1rem;
+}
+.today-event-highlight {
+  background: #fffae5;
+  border: 1px solid #ffd700;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+.carousel-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+.event-card {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem;
+  min-width: 150px;
+  cursor: pointer;
+}
+.event-card.active {
+  border-color: #333;
+  background-color: #f0f0f0;
+}
