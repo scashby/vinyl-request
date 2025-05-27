@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { supabase } from './supabaseClient';
-import Header from 'components/Header';
-import AuthWrapper from 'components/AuthWrapper';
-import NowPlayingDisplay from 'components/NowPlayingDisplay';
-import CustomerVinylForm from 'components/CustomerVinylForm';
-import AdminPanel from 'components/AdminPanel';
-import EventDisplay from 'components/EventDisplay';
-import EditEvents from 'admin/EditEvents';
-import AddCustomerVinyl from 'admin/AddCustomerVinyl';
-import EditQueue from 'admin/EditQueue';
-import AddAlbumArt from 'admin/AddAlbumArt';
-import AddTrackListings from 'admin/AddTrackListings';
-import ReturnToHome from 'admin/ReturnToHome';
-import LogoutAdmin from 'admin/LogoutAdmin';
-import BrowseCollectionPage from 'components/BrowseCollectionPage';
-import BackfillMissingData from 'admin/BackfillMissingData';
+
+import Header from './components/Header';
+import AuthWrapper from './components/AuthWrapper';
+import NowPlayingDisplay from './components/NowPlayingDisplay';
+import CustomerVinylForm from './components/CustomerVinylForm';
+import AdminPanel from './components/AdminPanel';
+import EventDisplay from './components/EventDisplay';
+import BrowseCollectionPage from './components/BrowseCollectionPage';
+
+import EditEvents from './admin/EditEvents';
+import AddCustomerVinyl from './admin/AddCustomerVinyl';
+import EditQueue from './admin/EditQueue';
+import AddAlbumArt from './admin/AddAlbumArt';
+import AddTrackListings from './admin/AddTrackListings';
+import ReturnToHome from './admin/ReturnToHome';
+import LogoutAdmin from './admin/LogoutAdmin';
+import BackfillMissingData from './admin/BackfillMissingData';
 import ImportDiscogs from './admin/ImportDiscogs';
+
 import './css/App.css';
+
 
 function App() {
   const [session, setSession] = useState(null);
