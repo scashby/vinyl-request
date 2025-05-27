@@ -1,8 +1,8 @@
 // ✅ Imports
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import TrackList from 'components/TrackList';
-import 'css/expandableRequestAlbumCard.css';
+import TrackList from './components/TrackList';
+import '../css//expandableRequestAlbumCard.css';
 
 // ✅ ExpandableRequestAlbumCard component
 const ExpandableRequestAlbumCard = ({ 
