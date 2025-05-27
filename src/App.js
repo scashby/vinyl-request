@@ -17,7 +17,7 @@ import LogoutAdmin from 'admin/LogoutAdmin';
 import BrowseCollectionPage from 'components/BrowseCollectionPage';
 import BackfillMissingData from 'admin/BackfillMissingData';
 import ImportDiscogs from './admin/ImportDiscogs';
-import './App.css';
+import './css/App.css';
 
 function App() {
   const [session, setSession] = useState(null);
